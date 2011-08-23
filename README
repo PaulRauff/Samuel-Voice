@@ -1,5 +1,7 @@
 This is an in-progress sound board app, being built to assist a child with severe communication disabilities.
 
+The end goal is to have a tablet based sound board that will enabled him, or his minder, to trigger spoken voice sounds from a series of touch sensitive icons.
+
 It consists of 2 distinct parts:
 
 1) An Adobe AIR desktop app for positioning and uploading images and sounds.

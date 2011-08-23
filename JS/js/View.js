@@ -205,7 +205,7 @@ SVMain.View = function(){
 		var titleBoxHeight = Number(fontsize) + 6;
 		
 		var thumbHTML = "<div class='thumb' id='"+index+"_"+id+"' style='width:"+thumbsize+"px; height:"+thumbsize+"px'>";
-		thumbHTML += "<img src='"+SVMain.BASE_URL+"resources/1/img/"+id+".jpg' class='thumb_image' />";
+		thumbHTML += "<img src='resources/1/img/"+id+".jpg' class='thumb_image' />";
 		
 		if(txt)
 			thumbHTML += "<div style='font-size:"+fontsize+"px; height:"+titleBoxHeight+"px; margin-top:-"+titleBoxHeight+"px;' class='thumb_title'>&nbsp;"+txt+"&nbsp;</div>";
