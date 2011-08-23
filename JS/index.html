@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<title>Samuel's Voice</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="language" content="en" />
+	<meta name="description" content="" />
+	<meta name="keywords" content="" />
+	
+	<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+	<div id="menu_data">
+		<span id='page_data'></span>
+	</div>
+	<div id="menu_holder"></div>
+	
+	<div id='content'>
+		<div id="index_holder"></div>
+		<div id="thumb_holder"></div>
+		<div id="thumb_spinner"></div>
+		<!--<div data-role="page" id="page1"> </div>-->
+	</div>
+</body>
+
+<script type="text/javascript" src="js/JQuery162.js"></script>
+<!--<script type="text/javascript" src="js/JQueryMobile1b2.js"></script>-->
+
+<script src="js/SVMain.js"> </script>
+<script src="js/Event.js"> </script>
+<script src="js/View.js"> </script>
+<script src="js/Model.js"> </script>
+<script src="js/Controller.js"> </script>
+<script src="js/ThumbData.js"> </script>
+<script src="js/SectionData.js"> </script>
+
+<script type="text/javascript">
+	//http://www.html5rocks.com/en/tutorials/appcache/beginner/#toc-events
+	//app cache
+	//<html manifest="app.manifest">
+	
+	SVMain.XML_URL = "resources/1/xml/data.xml";
+	//SVMain.XML_URL = "data.xml";
+	SVMain.BASE_URL = "http://www.2dface.com/lab/ipad/";
+
+	var _Main;
+	$(document).ready(function() {
+		_Main = new SVMain();
+	});
+</script>
+
+</html>

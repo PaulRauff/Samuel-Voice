@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			.circle {
+				position:absolute;
+				width: 10px;
+				height: 10px;
+				background: #f00;
+				opacity: 0;
+				-moz-border-radius: 5px;
+				-webkit-border-radius: 5px;
+				border-radius: 5px;
+				
+				-webkit-animation-name: FadeIn; 
+				-webkit-animation-timing-function: ease-in; 
+				-webkit-animation-duration: 1s;
+				-webkit-animation-iteration-count: 1;
+				-webkit-animation-fill-mode: forwards;
+
+			}
+			
+			@-webkit-keyframes FadeIn { 				
+				0% { opacity: 0; } 
+				100% { opacity: 1; } 
+			}
+
+
+		</style>
+	</head>
+	<body id='bdy'>
+	</body>
+	
+	<script>
+		var angIncr = Math.PI*2/ 15;
+		var delayIncr = 2/15;
+		var currAng = Math.PI;
+		var delay = 0;
+		var html = "";
+		var rad = 40;
+		var fingerX = 200;
+		var fingerY = 200;
+		
+		while(currAng < Math.PI*3){
+			var xpt = rad * Math.cos(currAng) + fingerX;
+			var ypt = rad * Math.sin(currAng) + fingerY;
+			
+			delay += delayIncr;
+			
+			html += "<div class='circle' style='left:"+xpt+"px; top:"+ypt+"px; -webkit-animation-delay: "+delay+"s;'></div>";
+			
+			currAng += angIncr;
+		}
+		
+		document.getElementById("bdy").innerHTML = html;
+	</script>
+</html>

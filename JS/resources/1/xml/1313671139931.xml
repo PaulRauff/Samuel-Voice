@@ -1,0 +1,58 @@
+<data>
+	<version>0.2</version>
+	<index thumbsize='150' fontsize='14' />
+	<thumbs>
+		<thumb id='1313670924558' com='0' scut='0'></thumb>
+		<thumb id='1313670713906' com='0' scut='0'></thumb>
+		<thumb id='1313670811941' com='0' scut='0'></thumb>
+		<thumb id='1313670904142' com='0' scut='0'></thumb>
+		<thumb id='1313670859062' com='0' scut='0'></thumb>
+		<thumb id='1313670818972' com='0' scut='0'></thumb>
+		<thumb id='1313670934502' com='0' scut='0'></thumb>
+		<thumb id='1313670835628' com='0' scut='0'></thumb>
+		<thumb id='1313670890068' com='0' scut='0'></thumb>
+		<thumb id='1313670773308' com='0' scut='0'></thumb>
+		<thumb id='1313670865920' com='0' scut='0'></thumb>
+		<thumb id='1313670803423' com='0' scut='0'></thumb>
+		<thumb id='1313670742597' com='0' scut='0'></thumb>
+		<thumb id='1313670962064' com='0' scut='0'></thumb>
+		<thumb id='1313670749437' com='0' scut='0'></thumb>
+		<thumb id='1313670944963' com='0' scut='0'></thumb>
+		<thumb id='1313670970626' com='0' scut='0'></thumb>
+		<thumb id='1313670874889' com='0' scut='0'></thumb>
+		<thumb id='1313670733747' com='0' scut='0'></thumb>
+		<thumb id='1313670785030' com='0' scut='0'></thumb>
+		<thumb id='1313669630774' com='0' scut='0'></thumb>
+		<thumb id='1313670825896' com='0' scut='0'></thumb>
+		<thumb id='1313670757047' com='0' scut='0'></thumb>
+		<thumb id='1313670850803' com='0' scut='0'></thumb>
+	</thumbs>
+	<section id='1313669630577' name='opinion' thumbsize='150' fontsize='14' bgcolour='66FFFF' >
+		<page pid='0'>
+			<t id='1313670970626' />
+			<t id='1313670962064' />
+			<t id='1313670944963' />
+			<t id='1313670934502' />
+			<t id='1313670924558' />
+			<t id='1313670904142' />
+			<t id='1313670890068' />
+			<t id='1313670874889' />
+			<t id='1313670865920' />
+			<t id='1313670859062' />
+			<t id='1313670850803' />
+			<t id='1313670835628' />
+			<t id='1313670825896' />
+			<t id='1313670818972' />
+			<t id='1313670811941' />
+			<t id='1313670803423' />
+			<t id='1313670785030' />
+			<t id='1313670773308' />
+			<t id='1313670757047' />
+			<t id='1313670749437' />
+			<t id='1313670742597' />
+			<t id='1313670733747' />
+			<t id='1313670713906' />
+			<t id='1313669630774' />
+		</page>
+	</section>
+</data>
