@@ -196,11 +196,16 @@ package com.comprido.imagetool.controller
 				_timer.addEventListener(TimerEvent.TIMER_COMPLETE, hideLightbox);
 				_timer.start();	
 			}
+			
+			if (event.isError)
+			{
+				_m.hasSaved = false;
+			}
 		}
 		
 		private function hideLightbox(event:TimerEvent):void 
 		{
-			_relay.dispatchEvent(new SystemMessageEvent("ok", -1, SystemMessageEvent.MESSAGE));
+			_relay.dispatchEvent(new SystemMessageEvent("ok", -1, false, SystemMessageEvent.MESSAGE));
 		}
 		
 		private function clickTimerCompleteHandler(event:TimerEvent):void 
@@ -341,10 +346,14 @@ package com.comprido.imagetool.controller
 			_soundFilePlayer.stopSound();
 			hasSound = true;
 			
-			if(event.soundFile)
+			if (event.soundFile)
+			{
 				tempThumb.soundFile = event.soundFile;
+			}
 			else
+			{
 				Debug.warning("NO SOUND FILE");
+			}
 			
 			checkAddVisiblity();
 			

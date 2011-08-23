@@ -158,7 +158,7 @@ package com.comprido.imagetool.model
 			loader.dataFormat = URLLoaderDataFormat.TEXT; 
 
 			_uploadListCurrent = 0;
-			loader.addEventListener(Event.COMPLETE, postImageData); 
+			loader.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadDataComplete); 
 			
 			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, uploadXMLError); 
 			loader.addEventListener(IOErrorEvent.IO_ERROR, uploadXMLError); 
@@ -173,11 +173,23 @@ package com.comprido.imagetool.model
 			} 
 		}
 		
+		private function uploadDataComplete(event:DataEvent):void
+		{
+			if (event.data != "ok")
+			{
+				_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Data.\nThere appears to be a server problem.\nPlease try again?", 5000, true, SystemMessageEvent.MESSAGE));
+			}
+			else
+			{
+				postImageData();
+			}
+		}
+		
 		private function postImageData(event:Event = null):void
 		{
 			if (_uploadList.length > 0)
 			{
-				_relay.dispatchEvent(new SystemMessageEvent("loading image "+ (_uploadListCurrent + 1) +" of "+_uploadList.length, -1, SystemMessageEvent.MESSAGE));
+				_relay.dispatchEvent(new SystemMessageEvent("loading image "+ (_uploadListCurrent + 1) +" of "+_uploadList.length, -1, false, SystemMessageEvent.MESSAGE));
 
 				var imageDir:File = File.applicationStorageDirectory.resolvePath("cachedimages/");
 				var cacheFile:File = new File(imageDir.nativePath +File.separator+ ""+_uploadList[_uploadListCurrent]+".jpg");
@@ -188,9 +200,9 @@ package com.comprido.imagetool.model
 					var urlRequest = new URLRequest(_serverLocation+"jpgsave.php?img="+_uploadList[_uploadListCurrent]+".jpg"); 
 					urlRequest.method = URLRequestMethod.POST; 
 					//cacheFile.addEventListener(ProgressEvent.PROGRESS, uploadProgress); 
-					cacheFile.addEventListener(Event.COMPLETE, uploadImageComplete); 
 					cacheFile.addEventListener(SecurityErrorEvent.SECURITY_ERROR, uploadImageError); 
-					cacheFile.addEventListener(IOErrorEvent.IO_ERROR, uploadImageError); 
+					cacheFile.addEventListener(IOErrorEvent.IO_ERROR, uploadImageError);
+					cacheFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadImageComplete);
 					cacheFile.upload(urlRequest, "uploadfile");
 				}
 				else
@@ -203,19 +215,26 @@ package com.comprido.imagetool.model
 				uploadSoundComplete();
 			}
 		}
-
-		private function uploadImageComplete(event:Event = null):void 
-		{
-			_uploadListCurrent++;
-			
-			if (_uploadListCurrent < _uploadList.length)
+		
+		private function uploadImageComplete(event:DataEvent = null) :void
+		{			
+			if (event.data != "ok")
 			{
-				postImageData();
+				_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Image.\nThere appears to be a server problem.\nPlease try again?", 5000, true, SystemMessageEvent.MESSAGE));
 			}
 			else
 			{
-				_uploadListCurrent = 0;
-				postSoundData();
+				_uploadListCurrent++;
+
+				if (_uploadListCurrent < _uploadList.length)
+				{
+					postImageData();
+				}
+				else
+				{
+					_uploadListCurrent = 0;
+					postSoundData();
+				}				
 			}
 		}
 		
@@ -223,7 +242,7 @@ package com.comprido.imagetool.model
 		{
 			if (_uploadList.length > 0)
 			{
-				_relay.dispatchEvent(new SystemMessageEvent("loading sound "+ (_uploadListCurrent + 1) +" of "+_uploadList.length, -1, SystemMessageEvent.MESSAGE));
+				_relay.dispatchEvent(new SystemMessageEvent("loading sound "+ (_uploadListCurrent + 1) +" of "+_uploadList.length, -1, false, SystemMessageEvent.MESSAGE));
 				
 				var soundDir:File = File.applicationStorageDirectory.resolvePath("cachedimages/");
 				var cacheFile:File = new File(soundDir.nativePath +File.separator+ ""+_uploadList[_uploadListCurrent]+".mp3");
@@ -234,7 +253,7 @@ package com.comprido.imagetool.model
 					var urlRequest = new URLRequest(_serverLocation+"soundsave.php?snd="+_uploadList[_uploadListCurrent]+".mp3"); 
 					urlRequest.method = URLRequestMethod.POST; 
 					//cacheFile.addEventListener(ProgressEvent.PROGRESS, uploadProgress); 
-					cacheFile.addEventListener(Event.COMPLETE, uploadSoundComplete); 
+					cacheFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadSoundComplete); 
 					cacheFile.addEventListener(SecurityErrorEvent.SECURITY_ERROR, uploadSoundError); 
 					cacheFile.addEventListener(IOErrorEvent.IO_ERROR, uploadSoundError); 
 					cacheFile.upload(urlRequest, "uploadfile");
@@ -250,39 +269,47 @@ package com.comprido.imagetool.model
 			}
 		}
 		
-		private function uploadSoundComplete(event:Event = null):void 
+		private function uploadSoundComplete(event:DataEvent = null):void 
 		{
-			_uploadListCurrent++;
-			
-			if (_uploadListCurrent < _uploadList.length)
+			if (event.data != "ok")
 			{
-				postSoundData();
+				_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Sound.\nThere appears to be a server problem.\nPlease try again?", 5000, true, SystemMessageEvent.MESSAGE));
 			}
 			else
-			{
-				for each(var s:SectionData in _sectionList)
-				{
-					s.onServer = true;
-				}
+			{			
+				_uploadListCurrent++;
 				
-				for each(var t:ThumbData in _thumbList)
+				if (_uploadListCurrent < _uploadList.length)
 				{
-					t.onServer = true;
+					postSoundData();
 				}
-				
-				_relay.dispatchEvent(new SystemMessageEvent("ok", -1, SystemMessageEvent.MESSAGE));
+				else
+				{
+					for each(var s:SectionData in _sectionList)
+					{
+						s.onServer = true;
+					}
+					
+					for each(var t:ThumbData in _thumbList)
+					{
+						t.onServer = true;
+					}
+					
+					_relay.dispatchEvent(new SystemMessageEvent("ok", -1, false, SystemMessageEvent.MESSAGE));
+				}
 			}
 		}
 		
 		private function uploadXMLError(event:Event):void
 		{
-			_relay.dispatchEvent(new SystemMessageEvent("Error Uploading XML.\nPlease check the save server location", 5000, SystemMessageEvent.MESSAGE));
+			_relay.dispatchEvent(new SystemMessageEvent("Error Uploading XML.\nPlease check the save server location", 5000, true, SystemMessageEvent.MESSAGE));
 		}
 		
 		private function uploadSoundError(event:Event):void 
 		{
 			Debug.warning("error uploading " + _uploadList[_uploadListCurrent] + ".mp3");
-			_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Sounds.\nPlease check the save server location", 5000, SystemMessageEvent.MESSAGE));
+			
+			_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Sounds.\nPlease check the save server location", 5000, true, SystemMessageEvent.MESSAGE));
 			
 			uploadSoundComplete();
 		}
@@ -290,7 +317,7 @@ package com.comprido.imagetool.model
 		private function uploadImageError(event:Event):void 
 		{
 			Debug.warning("error uploading " + _uploadList[_uploadListCurrent] + ".jpg");
-			_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Images.\nPlease check the save server location", 5000, SystemMessageEvent.MESSAGE));
+			_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Images.\nPlease check the save server location", 5000, true, SystemMessageEvent.MESSAGE));
 
 			uploadImageComplete();
 		}

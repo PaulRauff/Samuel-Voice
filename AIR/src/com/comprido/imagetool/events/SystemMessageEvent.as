@@ -26,11 +26,13 @@ package com.comprido.imagetool.events
 		public static const MESSAGE:String  = "MESSAGE";
 		public var message:String = "";
 		public var duration:int = -1;
+		public var isError:Boolean = false;
 		
-		public function SystemMessageEvent(msg:String, dur:int, type:String, bubbles:Boolean=false, cancelable:Boolean=false) 
+		public function SystemMessageEvent(msg:String, dur:int, err:Boolean, type:String, bubbles:Boolean=false, cancelable:Boolean=false) 
 		{ 
 			message = msg;
 			duration = dur;
+			isError = err;
 			
 			super(type, bubbles, cancelable);
 			
@@ -38,7 +40,7 @@ package com.comprido.imagetool.events
 		
 		public override function clone():Event 
 		{ 
-			return new SystemMessageEvent(message, duration, type, bubbles, cancelable);
+			return new SystemMessageEvent(message, duration, isError, type, bubbles, cancelable);
 		} 
 		
 		public override function toString():String 
