@@ -22,3 +22,4 @@ The AIR app consists of 2 page types. A main index page and a subsection page fo
 In the the running AIR app, find the 'save server' textfield at the top of the index page and enter the location of your .php files (just the directory, not the file names).
 In the JS/index.html file, edit line 44 to point to this location too.
 
+TODO : https://www.rememberthemilk.com/home/2dface/20645109/#section.tasks
