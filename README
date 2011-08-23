@@ -16,7 +16,8 @@ Images and mp3s to add to the sound board.
 
 Deployment:
 
-Upload JS/resources/*.php to your server and note the url location.
+Upload contents of JS to your server (but not JS folder itself).
+Upload JS/*.php to your server and note the url location.
 Install Adobe AIR and run the exe in AIR/bin/
 
 The AIR app consists of 2 page types. A main index page and a subsection page for each icon in the index page.

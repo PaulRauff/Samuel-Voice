@@ -158,7 +158,7 @@ package com.comprido.imagetool.model
 			loader.dataFormat = URLLoaderDataFormat.TEXT; 
 
 			_uploadListCurrent = 0;
-			loader.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadDataComplete); 
+			loader.addEventListener(Event.COMPLETE, uploadComplete); 
 			
 			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, uploadXMLError); 
 			loader.addEventListener(IOErrorEvent.IO_ERROR, uploadXMLError); 
@@ -173,9 +173,9 @@ package com.comprido.imagetool.model
 			} 
 		}
 		
-		private function uploadDataComplete(event:DataEvent):void
+		private function uploadComplete(event:Event):void
 		{
-			if (event.data != "ok")
+			if (event.target.data != "ok")
 			{
 				_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Data.\nThere appears to be a server problem.\nPlease try again?", 5000, true, SystemMessageEvent.MESSAGE));
 			}

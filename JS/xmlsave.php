@@ -1,7 +1,8 @@
 <?php
 	if(isset($_POST["xmldata"]))
 	{
-		$filename = "1/xml/data.xml";
+		$dirname = "1/xml/";
+		$filename = "data.xml";
 		$xmlpost = $_POST["xmldata"];
 
 		if(isset($_POST["bakxml"]))
@@ -9,26 +10,40 @@
 			rename($filename, "1/xml/".$_POST["bakxml"].".xml");
 		}
 		
-		xmlWriter($filename, $xmlpost);
+		xmlWriter($dirname, $filename, $xmlpost);
 	}
 	else
 	{
 		echo urlencode("Error: xmldata data not set");
 	}
 	
-	function xmlWriter($f, $x)
+	function xmlWriter($d, $f, $x)
 	{
-		//open $x
-		if (!$handle = fopen($f, 'w')) 
+		//try open the file
+		$canopen = ($handle = fopen($d.$f, 'w'));
+		
+		//if we can't open the file, try make the dir
+		if (!$canopen) 
 		{
-			 echo urlencode("Error: Cannot open file ($f)");
-			 exit;
+			$canopen = (@mkdir($d, 0700, true));
+			
+			//if we can mkdir, try open again.
+			if($canopen)
+			{
+				$canopen = ($handle = fopen($d.$f, 'w'));
+			}
+		}
+		
+		if(!$canopen)
+		{
+			echo urlencode("Cannot open dir ($d)");
+			exit;
 		}
 
 		// Write $x to our opened file.
 		if (fwrite($handle, $x) === FALSE) 
 		{
-			echo "&r=".urlencode("Cannot write to file ($f)");
+			echo urlencode("Cannot write to file ($f)");
 			exit;
 		}
 

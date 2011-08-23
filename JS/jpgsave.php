@@ -28,7 +28,7 @@
     $uploadfolder = "1/img";
     if (!file_exists($uploadfolder)) 
 	{
-        if(!@mkdir($uploadfolder)) 
+        if(!@mkdir($uploadfolder, 0700, true)) 
 		{
             echo ("Error: Could not create '" . $uploadfolder . "' folder");
             exit;
