@@ -8,17 +8,17 @@ It consists of 2 distinct parts:
 
 Requirements:
 
-You'll need an PHP web server that allows you to write dynamically files to the file system.
+You'll need a PHP web server that allows you to dynamically write files to the file system.
 The Adobe AIR 2.7 runtime [http://get.adobe.com/air/].
 Images and mp3s to add to the sound board.
 
 Deployment:
 
-Upload JS/resources *.php to your server and note the url location.
+Upload JS/resources/*.php to your server and note the url location.
 Install Adobe AIR and run the exe in AIR/bin/
 
 The AIR app consists of 2 page types. A main index page and a subsection page for each icon in the index page.
 
 In the the running AIR app, find the 'save server' textfield at the top of the index page and enter the location of your .php files (just the directory, not the file names).
-
+In the JS/index.html file, edit line 44 to point to this location too.
 
