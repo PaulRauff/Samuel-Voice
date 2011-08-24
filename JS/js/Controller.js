@@ -116,7 +116,7 @@ SVMain.Controller = function(){
 	}
 	
 	function startSpinner(thumbID, fingerX, fingerY){
-		var spinTime = 2;
+		var spinTime = _m.getTouchTime()/1000;
 		var dotCount = 15;
 		var angIncr = Math.PI*2/ dotCount;
 		var delayIncr = spinTime/dotCount;
@@ -157,6 +157,8 @@ SVMain.Controller = function(){
 			startSpinner(args[1], args[2], args[3]);
 			
 			_startTouchTime = new Date().getTime();
+			
+			_startMoveY = args[3];
 		}
 	}
 
@@ -178,6 +180,8 @@ SVMain.Controller = function(){
 				_v.moveThumbs(-mv);
 			}
 		}
+		
+		_v.scrollVertical(_startMoveY - args[3]);
 		
 		_v.setThumbSpinner("");
 	}
@@ -245,7 +249,7 @@ SVMain.Controller = function(){
 	}
 	
 	function setPageData(){
-		startSpinner(1601314125699681, 200, 200);
+		//startSpinner(1601314125699681, 200, 200);
 		
 		if(_m.getCurrentSectionPageTotal() > 1)
 			_v.setPageData(_m.getCurrentPage()+1, _m.getCurrentSectionPageTotal());

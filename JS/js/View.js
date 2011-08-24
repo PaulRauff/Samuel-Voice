@@ -202,6 +202,11 @@ SVMain.View = function(){
 		$("#thumb_spinner").html(html);
 	}
 	
+	function scrollVertical(scrollY){
+		var top = $("#thumb_holder").scrollTop();
+		$("#thumb_holder").scrollTop(top + scrollY);
+	}
+	
 	function getCellHTML(index, id, thumbsize, fontsize, txt){
 		var titleBoxHeight = Number(fontsize) + 6;
 		
@@ -241,6 +246,7 @@ SVMain.View = function(){
 		getCellHTML:getCellHTML,
 		moveThumbs:moveThumbs,
 		setThumbSpinner:setThumbSpinner,
+		scrollVertical:scrollVertical,
 		destroy:destroy,
 		onError:onError,
 		evt:SVMain.Event()

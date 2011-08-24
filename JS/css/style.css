@@ -15,7 +15,7 @@ a{
 	width:940px;
 	margin: 0 auto;
 	text-align:center;
-	overflow: hidden;
+	overflow: visible;
 }
 
 #menu_holder {	
@@ -103,7 +103,7 @@ a{
 	display: block;
 	width: 920px;
 	height: 675px;
-	overflow: scroll;
+	overflow: auto;
 }
 .thumb {
 	float: left;

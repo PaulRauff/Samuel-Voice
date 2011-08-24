@@ -26,7 +26,7 @@ SVMain.Model = function(){
 	var _thumbData = new Array();
 	var _sectionData = new Array();
 	var _menuDown = true;
-	var _touchTime = 2000;
+	var _touchTime = 1000;
 	
 	SVMain.Model.XML_READY = "XML_READY";
 	SVMain.Model.SECTION_READY = "SECTION_READY";
