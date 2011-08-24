@@ -54,7 +54,7 @@ package com.comprido.imagetool.view
 		private var _thumb_mc:MovieClip;
 		private var _mp3_mc:MovieClip;
 		private var _section_thumb_holder_uil:UILoader;
-		
+
 		private var _bgColour:Sprite;
 		private var _imageHolder:Sprite;
 

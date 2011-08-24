@@ -42,6 +42,7 @@ package com.comprido.imagetool.view
 		private var _size_cmp:NumericStepper;
 		private var _font_cmp:NumericStepper;
 		private var _history_cmp:ComboBox;
+		private var _test_url_btn:Button;
 		
 		private var _lightbox_mc:MovieClip;
 		private var _lightbox_txt:TextField;
@@ -63,6 +64,7 @@ package com.comprido.imagetool.view
 			_font_cmp = NumericStepper(Validate.element(font_cmp, "font_cmp missing"));
 			
 			_history_cmp = ComboBox(Validate.element(history_cmp, "history_cmp missing"));
+			_test_url_btn = Button(Validate.element(test_url_btn, "test_url_btn missing"));
 
 			_lightbox_mc = MovieClip(Validate.element(lightbox_mc, "lightbox_mc missing"));
 			_lightbox_txt = TextField(Validate.element(_lightbox_mc["lightbox_txt"], "lightbox_txt missing"));
@@ -145,6 +147,8 @@ package com.comprido.imagetool.view
 		{
 			_tilelist.addEventListener(MouseEvent.MOUSE_DOWN, _c.onTileListMouseDown);
 			_tilelist.addEventListener(MouseEvent.MOUSE_UP, _c.onTileListMouseUp);
+			
+			_test_url_btn.addEventListener(MouseEvent.CLICK, _c.launchUserURL);
 			
 			_reset_btn.addEventListener(MouseEvent.CLICK, _c.resetCurrentSectionThumbList);
 			

@@ -28,6 +28,7 @@ package com.comprido.imagetool.model
 	import flash.events.*;
 	import flash.filesystem.File;
 	import flash.utils.*;
+	import flash.net.*;
 	import fl.data.DataProvider;
 	import com.paulrauff.utils.sharedObject.*;
 
@@ -196,6 +197,11 @@ package com.comprido.imagetool.model
 					break;
 				}
 			}
+		}
+		
+		public function launchUserURL():void
+		{
+			navigateToURL(new URLRequest(serverLocation))
 		}
 		
 		/**

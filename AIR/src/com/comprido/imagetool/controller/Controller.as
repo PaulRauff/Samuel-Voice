@@ -480,6 +480,7 @@ package com.comprido.imagetool.controller
 				bm = new Bitmap(smallBMD, PixelSnapping.NEVER, true);
 			}
 
+			//move to model
 			var jpgEncoder:JPGEncoder = new JPGEncoder(80);
 			var jpgStream:ByteArray = jpgEncoder.encode(bm.bitmapData);
 
@@ -508,6 +509,11 @@ package com.comprido.imagetool.controller
 		{
 			_m.hasSaved = false;
 			_m.moveSectionData(oldIndex, newIndex);
+		}
+		
+		public function launchUserURL(event:MouseEvent):void 
+		{
+			_m.launchUserURL();
 		}
 		
 		public function pageRight(event:MouseEvent):void 

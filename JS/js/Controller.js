@@ -149,7 +149,7 @@ SVMain.Controller = function(){
 
 	function onThumbTouchStart(args){
 		if(args.length === 3){
-			_v.initSound(SVMain.BASE_URL+"resources/1/sound/"+args[1]+".mp3");
+			_v.initSound("1/sound/"+args[1]+".mp3");
 			_startMoveX = args[2];
 		}
 	}
