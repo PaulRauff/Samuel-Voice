@@ -80,8 +80,6 @@ SVMain.View = function(){
 				break;
 			case "touchmove": 
 				_evt.fire(SVMain.View.THUMB_TOUCH_MOVE, thumbID, event.targetTouches[0].pageX, event.targetTouches[0].pageY);
-				var scr = $("#thumb_holder").scrollTop() + 50;
-				$("#thumb_holder").scrollTop(scr);
 				break;        
 			case "touchend":
 				_evt.fire(SVMain.View.THUMB_TOUCH_END, thumbID);
@@ -134,8 +132,7 @@ SVMain.View = function(){
 	function addIndex(html){
 		$("#index_holder").html(html);
 
-	}
-	
+	}	
 	
 	function addSections(html){
 		$("#index_holder").html(html);

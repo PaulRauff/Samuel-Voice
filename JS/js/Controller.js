@@ -123,8 +123,6 @@ SVMain.Controller = function(){
 		var currAng = Math.PI;
 		var delay = 0;		
 		var radius = 80;
-		//fingerX = 200;
-		//fingerY = 200;
 		var html = "";
 		
 		while(currAng < Math.PI*3){
@@ -156,7 +154,6 @@ SVMain.Controller = function(){
 			_v.initSound("1/sound/"+args[1]+".mp3");
 			_startMoveX = args[2];
 			
-			console.log(args[1] +" :: "+ args[2] +" :: "+ args[3]);
 			startSpinner(args[1], args[2], args[3]);
 			
 			_startTouchTime = new Date().getTime();
@@ -230,7 +227,7 @@ SVMain.Controller = function(){
 			loadSection(tid);
 		}else{
 			
-			if((_startTouchTime + _m.getTouchTime()) <= new Date().getTime()){}
+			if((_startTouchTime + _m.getTouchTime()) <= new Date().getTime()){
 				_v.playSound();
 			}
 		}
