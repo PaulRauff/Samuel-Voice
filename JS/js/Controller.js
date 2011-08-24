@@ -22,7 +22,10 @@ SVMain.Controller = function(){
 	var _v = null;
 	
 	var _startMoveX = 0;
+	var _startMoveY = 0;
 	var _moveX = 0;
+	var _moveY = 0;
+	var _startTouchTime = 0;
 	
 	_Controller();
 	function _Controller(){
@@ -112,14 +115,14 @@ SVMain.Controller = function(){
 		loadPage(p);
 	}
 	
-	function startSpinner(fingerX, fingerY){
+	function startSpinner(thumbID, fingerX, fingerY){
 		var spinTime = 2;
 		var dotCount = 15;
 		var angIncr = Math.PI*2/ dotCount;
 		var delayIncr = spinTime/dotCount;
 		var currAng = Math.PI;
 		var delay = 0;		
-		var radius = 40;
+		var radius = 80;
 		//fingerX = 200;
 		//fingerY = 200;
 		var html = "";
@@ -130,12 +133,12 @@ SVMain.Controller = function(){
 			
 			delay += delayIncr;
 			
-			html += "<div class='circle' style='left:"+xpt+"px; top:"+ypt+"px; -webkit-animation-delay: "+delay+"s;'></div>";
+			html += "<div class='spinner_animation' style='left:"+xpt+"px; top:"+ypt+"px; -webkit-animation-delay: "+delay+"s;'></div>";
 			
 			currAng += angIncr;
 		}
 		
-		document.getElementById("bdy").innerHTML = html;
+		_v.setThumbSpinner(html);
 	}
 
 	function thumbReset(){
@@ -148,13 +151,20 @@ SVMain.Controller = function(){
 	}
 
 	function onThumbTouchStart(args){
-		if(args.length === 3){
+		
+		if(args.length === 4){
 			_v.initSound("1/sound/"+args[1]+".mp3");
 			_startMoveX = args[2];
+			
+			console.log(args[1] +" :: "+ args[2] +" :: "+ args[3]);
+			startSpinner(args[1], args[2], args[3]);
+			
+			_startTouchTime = new Date().getTime();
 		}
 	}
 
 	function onThumbTouchMove(args){
+		
 		_moveX = args[2];
 		var mv = _startMoveX - _moveX;
 		var cp = _m.getCurrentPage() +1;
@@ -171,20 +181,27 @@ SVMain.Controller = function(){
 				_v.moveThumbs(-mv);
 			}
 		}
+		
+		_v.setThumbSpinner("");
 	}
 
 	function onThumbTouchEnd(args){
+				
 		var mv = Math.abs(_startMoveX - _moveX);
 		
 		if(mv < 500 || _moveX === 0){
 			_v.moveThumbs(0);
-			
-			if(_moveX === 0 && args.length >= 1)
+						
+			if(_moveX === 0 && args.length >= 1){
 				onThumbClicked(args);
+			}
 		}
 		
+		_startTouchTime = 0;
 		_moveX = 0;
 		_startMoveX = 0;
+		
+		_v.setThumbSpinner("");
 	}
 	
 	function onMenuClicked(args){
@@ -212,7 +229,10 @@ SVMain.Controller = function(){
 		if(_m.getThumbShortcut(tid)){
 			loadSection(tid);
 		}else{
-			_v.playSound();
+			
+			if((_startTouchTime + _m.getTouchTime()) <= new Date().getTime()){}
+				_v.playSound();
+			}
 		}
 	}
 		
@@ -228,6 +248,8 @@ SVMain.Controller = function(){
 	}
 	
 	function setPageData(){
+		startSpinner(1601314125699681, 200, 200);
+		
 		if(_m.getCurrentSectionPageTotal() > 1)
 			_v.setPageData(_m.getCurrentPage()+1, _m.getCurrentSectionPageTotal());
 	}

@@ -26,6 +26,7 @@ SVMain.Model = function(){
 	var _thumbData = new Array();
 	var _sectionData = new Array();
 	var _menuDown = true;
+	var _touchTime = 2000;
 	
 	SVMain.Model.XML_READY = "XML_READY";
 	SVMain.Model.SECTION_READY = "SECTION_READY";
@@ -226,6 +227,10 @@ SVMain.Model = function(){
 		return _thumbData[tid].isShortcut();
 	}
 	
+	var getTouchTime = function(){
+		return _touchTime;
+	}
+	
 	var menuDown = function(){
 		if(arguments[0])
 		{
@@ -258,6 +263,7 @@ SVMain.Model = function(){
 		getThumbShortcut:getThumbShortcut,
 		getIndexThumbSize:getIndexThumbSize,
 		getIndexFontSize:getIndexFontSize,
+		getTouchTime:getTouchTime,
 		menuDown:menuDown,
 		evt:SVMain.Event()
 	}

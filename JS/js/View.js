@@ -76,10 +76,10 @@ SVMain.View = function(){
 		switch(event.type)
 		{
 			case "touchstart":
-				_evt.fire(SVMain.View.THUMB_TOUCH_START, thumbID, event.targetTouches[0].pageX);
+				_evt.fire(SVMain.View.THUMB_TOUCH_START, thumbID, event.targetTouches[0].pageX, event.targetTouches[0].pageY);
 				break;
 			case "touchmove": 
-				_evt.fire(SVMain.View.THUMB_TOUCH_MOVE, thumbID, event.targetTouches[0].pageX);
+				_evt.fire(SVMain.View.THUMB_TOUCH_MOVE, thumbID, event.targetTouches[0].pageX, event.targetTouches[0].pageY);
 				var scr = $("#thumb_holder").scrollTop() + 50;
 				$("#thumb_holder").scrollTop(scr);
 				break;        
@@ -87,7 +87,7 @@ SVMain.View = function(){
 				_evt.fire(SVMain.View.THUMB_TOUCH_END, thumbID);
 				break;
 			case "mousedown":
-				_evt.fire(SVMain.View.THUMB_TOUCH_START, thumbID, 0);
+				_evt.fire(SVMain.View.THUMB_TOUCH_START, thumbID, 0, 0);
 				break;
 			case "mouseup":
 				_evt.fire(SVMain.View.THUMB_TOUCH_END, thumbID);
@@ -185,7 +185,7 @@ SVMain.View = function(){
 			_audio = null;
 			_audio = document.createElement('audio');
 			_audio.src = src;
-		//	_audio.load();
+			_audio.load();
 		}
 	}
 
@@ -199,6 +199,10 @@ SVMain.View = function(){
 	
 	function moveThumbs(thumbX){
 		$("#thumb_holder").css("left", thumbX);
+	}
+	
+	function setThumbSpinner(html){
+		$("#thumb_spinner").html(html);
 	}
 	
 	function getCellHTML(index, id, thumbsize, fontsize, txt){
@@ -239,6 +243,7 @@ SVMain.View = function(){
 		setCurrentSectionName:setCurrentSectionName,
 		getCellHTML:getCellHTML,
 		moveThumbs:moveThumbs,
+		setThumbSpinner:setThumbSpinner,
 		destroy:destroy,
 		onError:onError,
 		evt:SVMain.Event()
