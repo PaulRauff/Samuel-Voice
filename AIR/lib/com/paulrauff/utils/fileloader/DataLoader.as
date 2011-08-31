@@ -16,13 +16,16 @@ package com.paulrauff.utils.fileloader
 		//"text"
 		//"binary"
 		//"variables"
-		public function DataLoader(url:String, handleProgress:Boolean = true, format:String = "text") 
+		public function DataLoader(handleProgress:Boolean = true, format:String = "text") 
 		{
 			_urlLoader = new URLLoader();
 			_urlLoader.dataFormat = format;
 
             configureListeners(_urlLoader, handleProgress);
-
+		}
+		
+		public function load(url:String):void
+		{
             var request:URLRequest = new URLRequest(url);
 
 			try 
@@ -32,7 +35,7 @@ package com.paulrauff.utils.fileloader
 			catch (error:Error) 
 			{
                 Debug.error("Unable to load ["+url+"] in DataLoader");
-            }
+            }			
 		}
 
 		private function configureListeners(dispatcher:IEventDispatcher, handleProgress:Boolean):void 
@@ -71,8 +74,8 @@ package com.paulrauff.utils.fileloader
 
 		private function ioErrorHandler(event:IOErrorEvent):void 
 		{
-			Debug.error("DataLoader.ioErrorHandler: " + event);
-			this.dispatchEvent(event);
+			Debug.error("DataLoader.ioErrorHandler: \n" + event);
+			dispatchEvent(event);
 		}
 
 		private function openHandler(event:Event):void 

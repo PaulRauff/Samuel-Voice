@@ -109,8 +109,6 @@ package com.comprido.imagetool.view
 				tmpbtn.x  = pos;
 
 				pos = 5 + tmpbtn.width + tmpbtn.x;
-				
-				Debug.log(pos);
 			}
 		}
 		

@@ -140,7 +140,7 @@ package com.comprido.imagetool.view
 			resizeThumbNails();
 			initEvents();
 			
-			_c.setSave();
+			_c.initSection();
 		}
 		
 		protected override function initEvents():void
@@ -266,14 +266,10 @@ package com.comprido.imagetool.view
 		private function onTileListDoubleClick(event:TileDoubleClickEvent):void 
 		{
 			event.imageCell.stopDrag();
-			Debug.log("dbl click");
-
 		}
 		
 		private function onImageDropped(event:NewBitmapDataEvent):void
-		{
-			Debug.log("onImageDropped");
-			
+		{			
 			_tilelist.addItem({label:"", source:event.bm});
 
 			var id:Number = _c.getTime();

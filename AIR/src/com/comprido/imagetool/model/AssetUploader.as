@@ -218,7 +218,7 @@ package com.comprido.imagetool.model
 		
 		private function uploadImageComplete(event:DataEvent = null) :void
 		{			
-			if (event.data != "ok")
+			if (event && event.data != "ok")
 			{
 				_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Image.\nThere appears to be a server problem.\nPlease try again?", 5000, true, SystemMessageEvent.MESSAGE));
 			}
@@ -271,7 +271,7 @@ package com.comprido.imagetool.model
 		
 		private function uploadSoundComplete(event:DataEvent = null):void 
 		{
-			if (event.data != "ok")
+			if (event && event.data != "ok")
 			{
 				_relay.dispatchEvent(new SystemMessageEvent("Error Uploading Sound.\nThere appears to be a server problem.\nPlease try again?", 5000, true, SystemMessageEvent.MESSAGE));
 			}

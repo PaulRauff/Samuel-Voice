@@ -56,12 +56,14 @@ package com.comprido.imagetool.controller
 			
 			if (_channel)
 			{
-				_soundPosition = _channel.position;
+				_soundPosition = _channel.position+1;
 			}
 			else
 			{
 				_soundPosition = 0;
 			}
+			
+			Debug.log("_soundPosition::"+_soundPosition);
 			
 			if (_soundPosition > 0)
 			{

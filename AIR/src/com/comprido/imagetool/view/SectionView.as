@@ -33,7 +33,9 @@ package com.comprido.imagetool.view
 	import fl.data.DataProvider;
 	import flash.display.*;
 	import flash.events.*;
+	import flash.geom.*;
 	import flash.text.*;
+	import com.greensock.*;
 	
 	public class SectionView extends BaseView implements ISection
 	{
@@ -72,6 +74,8 @@ package com.comprido.imagetool.view
 		private var _descriptionDefaultText:String = "";
 		
 		private var _alertBox:AlertBox;
+		
+		private var _imageHolderCoords:Point;
 
 		public function SectionView(section:int, page:int, c:Controller) 
 		{
@@ -113,6 +117,8 @@ package com.comprido.imagetool.view
 			//init states etc
 			/////////////////
 			
+			
+			
 			_section_thumb_holder_uil.source = _c.getFileLocation(_c.getSectionID(_c.currentSection), "img");
 			_description_txt.text = Main.DESCRIPTION_DEFAULT_TEXT;
 
@@ -122,13 +128,12 @@ package com.comprido.imagetool.view
 			_mp3_mc.visible = !_play_mp3_btn.visible;
 			_add_btn.visible = false;
 
-			_c.tempThumb = null;
-			_c.tempThumb = new ThumbData(_c.getTime());
-
 			_imageHolder = new Sprite();
 			addChild(_imageHolder);
 			_imageHolder.x = _thumb_mc.x;
 			_imageHolder.y = _thumb_mc.y;
+
+			_imageHolderCoords = new Point(_imageHolder.x, _imageHolder.y);
 
 			if(_c.currentSectionTitle && _c.currentSectionTitle != "")
 				_title_txt.text = _c.currentSectionTitle;
@@ -195,9 +200,7 @@ package com.comprido.imagetool.view
 
 			_lightbox_mc.visible = false;
 			setChildIndex(_lightbox_mc, numChildren - 1);
-			
-			_font_cmp.value = Number(_c.fontSize);
-			_size_cmp.value = Number(_c.thumbSize);
+			swapChildren(_imageHolder, _tilelist);
 
 			resizeThumbNails();
 			resizeFont();
@@ -254,12 +257,18 @@ package com.comprido.imagetool.view
 			_c.relay.addEventListener(Relay.ADD_TILE, addThumbToPage);			
 			_c.relay.addEventListener(Relay.OPEN_ALERT_BOX, openAlertBox);
 			_c.relay.addEventListener(Relay.CLOSE_ALERT_BOX, closeAlertBox);
+			_c.relay.addEventListener(Relay.SET_THUMB_DESCRIPTION, setDescription);	
 			
 			_tilelist.addEventListener(KeyboardEvent.KEY_DOWN, _c.onKeyPressedDown);
 
 			super.initEvents();
 			
-			_c.setSave();
+			_c.initSection();
+		}
+		
+		private function setDescription(event:SetThumbDescriptionEvent):void 
+		{
+			_description_txt.text = event.description;
 		}
 		
 		
@@ -347,7 +356,7 @@ package com.comprido.imagetool.view
 		}
 		
 		private function changeMP3ButtonVisibility(event:SetMP3ButtonVisibiltyEvent)
-		{
+		{			
 			_play_mp3_btn.visible = event.isVisible;
 			_mp3_mc.visible = !_play_mp3_btn.visible;	
 		}
@@ -414,23 +423,18 @@ package com.comprido.imagetool.view
 			_play_mp3_btn.visible = false;
 			_mp3_mc.visible = !_play_mp3_btn.visible;
 
-			while (_imageHolder.numChildren > 0)
-			{
-				_imageHolder.removeChildAt(0);
-			}
-
 			_thumb_mc.visible = true;
-			
-			_c.tempThumb = null;
-			_c.tempThumb = new ThumbData(_c.getTime());
 
-			_c.hasImage = false;
-			_c.hasSound = false;
+			_font_cmp.value = Number(_c.fontSize);
+			_size_cmp.value = Number(_c.thumbSize);
+			
+			_imageHolder.x = _imageHolderCoords.x;
+			_imageHolder.y = _imageHolderCoords.y;
 		}
 
 		protected override function saveAndUpload(event:Event = null):void 
 		{
-			_lightbox_mc.visible = true;			
+			_lightbox_mc.visible = true;
 			super.saveAndUpload();
 		}
 		
@@ -489,35 +493,59 @@ package com.comprido.imagetool.view
 			event.bm.height = event.bm.height * rat;
 		
 			_thumb_mc.visible = false;
-			
+
 			_imageHolder.addChild(event.bm);
+			
+			_imageHolder.x = mouseX;
+			_imageHolder.y = mouseY;
+			
+			TweenLite.to(_imageHolder, 0.3, {x:_imageHolderCoords.x, y:_imageHolderCoords.y});
 
 			if (event.bm.height < _thumb_mc.height)
 			{
 				event.bm.y = (_thumb_mc.height - event.bm.height)/2;
 			}
-
-			_c.hasImage = true;	
-			_c.checkAddVisiblity();
-
-			_c.tempThumb.bitmap = event.bm;
 		}
 		
 		private function addThumbToPage(event:TileAddEvent):void
 		{
-			_tilelist.addItemAt( { label:event.description, source:event.src }, event.index);
-			resetTop();	
+			var toPt:Point = new Point();
+			
+			Debug.log(event.index)
+			
+			if (event.index > 0)
+			{
+				toPt.x = mouseX;
+				toPt.y = mouseY;
+			}
+			else
+			{
+				toPt.x = _tilelist.x;
+				toPt.y = _tilelist.y;
+			}
+			
+			TweenLite.to(_imageHolder, 0.7, {x:toPt.x, y:toPt.y, onComplete:onFinishAddThumbTween, onCompleteParams:[event.description, event.src, event.index]});
+		}
+		
+		private function onFinishAddThumbTween(descr:String, src:Object, ii:int):void 
+		{			
+			while (_imageHolder.numChildren > 0)
+			{
+				_imageHolder.removeChildAt(0);
+			}
+			
+			_tilelist.addItemAt( { label:descr, source:src}, ii);
+			resetTop();				
 		}
 
 		private function onTileListSingleClick(event:TileSingleClickEvent):void
 		{
+			Debug.log("onTileListSingleClick");
+			
 			var imgCell:ImageCell = event.imageCell;
 			imgCell.stopDrag();
 
-			var tmx:int = _tilelist.mouseX;
-			var tmy:int = _tilelist.mouseY;
-			
-			var newIndex:int = _c.getTileIndexFromXY(tmx, tmy);
+			var newIndex:int = _c.getTileIndexFromXY(_tilelist.mouseX, _tilelist.mouseY);
 
 			if (newIndex >= _tilelist.length)
 			{
@@ -578,8 +606,6 @@ package com.comprido.imagetool.view
 		private function onTileListDoubleClick(event:TileDoubleClickEvent):void 
 		{
 			event.imageCell.stopDrag();
-			Debug.log("dbl click");
-
 		}
 
 		private function SystemMessageEventReceived(event:SystemMessageEvent):void 
@@ -590,10 +616,6 @@ package com.comprido.imagetool.view
 		
 		public override function destroy():void
 		{
-			Debug.log("DESTROY");
-			
-			_c.tempThumb = null;
-			
 			_play_mp3_btn.removeEventListener(MouseEvent.CLICK, _c.onPlaySoundClicked);
 			_add_btn.removeEventListener(MouseEvent.CLICK, _c.addThumbToPage);
 			_reset_btn.removeEventListener(MouseEvent.CLICK, _c.resetCurrentSectionThumbList);
@@ -635,6 +657,8 @@ package com.comprido.imagetool.view
 			
 			_c.relay.removeEventListener(Relay.OPEN_ALERT_BOX, openAlertBox);
 			_c.relay.removeEventListener(Relay.CLOSE_ALERT_BOX, closeAlertBox);
+			
+			_c.relay.removeEventListener(Relay.SET_THUMB_DESCRIPTION, setDescription);	
 			
 			
 			

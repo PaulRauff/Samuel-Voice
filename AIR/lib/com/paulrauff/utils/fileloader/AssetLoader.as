@@ -13,6 +13,7 @@ package com.paulrauff.utils.fileloader
 	public class AssetLoader extends EventDispatcher
 	{
 		private var _assetLoader:Loader;
+		private var _request:URLRequest;
 		
 		public function AssetLoader(url:String, contentType:String = null, handleProgress:Boolean = true) 
 		{
@@ -20,15 +21,18 @@ package com.paulrauff.utils.fileloader
 			
 			configureListeners(_assetLoader.contentLoaderInfo, handleProgress);
 
-			const request:URLRequest = new URLRequest(url);
+			_request = new URLRequest(url);
 
 			if (contentType != null)
 			{
 				var header:URLRequestHeader = new URLRequestHeader("Content-Type", contentType);
-				request.requestHeaders.push(header);
+				_request.requestHeaders.push(header);
 			}
-			
-			_assetLoader.load(request);
+		}
+		
+		public function load():void
+		{
+			_assetLoader.load(_request);
 		}
 		
 		public function unload():void

@@ -26,7 +26,7 @@ SVMain.Model = function(){
 	var _thumbData = new Array();
 	var _sectionData = new Array();
 	var _menuDown = true;
-	var _touchTime = 1000;
+	var _touchTime = 500;
 	
 	SVMain.Model.XML_READY = "XML_READY";
 	SVMain.Model.SECTION_READY = "SECTION_READY";
@@ -150,6 +150,7 @@ SVMain.Model = function(){
 	
 	function loadSection(sid){
 		var len = _sectionData.length;
+		var ii = 0;
 		
 		for(ii = 0; ii < len; ii++){			
 			if(_sectionData[ii].id() == sid){
@@ -162,8 +163,6 @@ SVMain.Model = function(){
 	}
 	
 	function loadPage(pid){
-		//console.log("loadpage : "+_currentPage +" :: "+ pid +" :: "+ _sectionData[_currentSection].pageTotal());
-		
 		if(pid >= 0 && pid < _sectionData[_currentSection].pageTotal()){
 			_currentPage = pid;
 			_evt.fire(SVMain.Model.SECTION_READY);

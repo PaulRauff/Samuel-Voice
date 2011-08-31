@@ -105,6 +105,11 @@ a{
 	height: 675px;
 	overflow: auto;
 }
+
+#thumb_spinner{
+	z-index: 30;
+}
+
 .thumb {
 	float: left;
 	padding: 0;
@@ -132,22 +137,26 @@ a{
 
 .spinner_animation{
 	position:absolute;
-	width: 10px;
-	height: 10px;
+	width: 16px;
+	height: 16px;
 	background: #f00;
 	opacity: 0;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
 	
 	-webkit-animation-name: FadeIn; 
 	-webkit-animation-timing-function: ease-in; 
-	-webkit-animation-duration: 1s;
+	
 	-webkit-animation-iteration-count: 1;
 	-webkit-animation-fill-mode: forwards;
+	
+	z-index: 40;
 }
 
 @-webkit-keyframes FadeIn { 				
-	0% { opacity: 0; } 
-	100% { opacity: 1; } 
+	0% { opacity: 1; } 
+	10% { opacity: 0.8; } 
+	80% { opacity: 0.8; } 
+	100% { opacity: 0; } 
 }

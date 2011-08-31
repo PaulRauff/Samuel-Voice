@@ -29,6 +29,7 @@ package com.comprido.imagetool.model
 		private var _description:String = "";
 		private var _onServer:Boolean = false;
 
+		private var _bitmapFileLocaton:String = "";
 		private var _bitmap:Bitmap;
 		
 		private var _soundFileLocaton:String = "";
@@ -42,6 +43,22 @@ package com.comprido.imagetool.model
 		public function ThumbData(id:Number)
 		{			
 			_id = id;
+		}
+		
+		public function clone(id:Number):ThumbData
+		{
+			var td:ThumbData = new ThumbData(id);
+
+			td.description = description;
+			td.onServer = onServer;
+			td.bitmap = bitmap;
+			td.soundFileLocaton = soundFileLocaton;
+			td.soundFile = soundFile;
+			td.page = page;
+			td.isShortcut = isShortcut;
+			td.isCommon = isCommon;
+			
+			return td;			
 		}
 		
 		public function get description():String
@@ -83,11 +100,14 @@ package com.comprido.imagetool.model
 		
 		public function set soundFile(f:File):void
 		{
-			f.addEventListener(Event.COMPLETE, onSoundFileLoaded);
-			f.addEventListener(IOErrorEvent.IO_ERROR, onSoundFileLoadError);
-			f.load();
+			if (f)
+			{
+				f.addEventListener(Event.COMPLETE, onSoundFileLoaded);
+				f.addEventListener(IOErrorEvent.IO_ERROR, onSoundFileLoadError);
+				f.load();
 			
-			_soundFile = f;
+				_soundFile = f;
+			}
 		}
 		
 		private function onSoundFileLoaded(event:Event):void 
@@ -158,6 +178,16 @@ package com.comprido.imagetool.model
 		public function set isCommon(value:Boolean):void 
 		{
 			_isCommon = value;
+		}
+		
+		public function get bitmapFileLocaton():String 
+		{
+			return _bitmapFileLocaton;
+		}
+		
+		public function set bitmapFileLocaton(value:String):void 
+		{
+			_bitmapFileLocaton = value;
 		}
 		
 		private function getCacheFile(cachePath:String, ext:String):File

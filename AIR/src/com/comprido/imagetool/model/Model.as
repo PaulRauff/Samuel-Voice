@@ -32,7 +32,7 @@ package com.comprido.imagetool.model
 	import fl.data.DataProvider;
 	import com.paulrauff.utils.sharedObject.*;
 
-	public class Model
+	public class Model extends EventDispatcher
 	{
 		private var _relay:Relay;
 		private var _thumbList:Dictionary;
@@ -67,12 +67,13 @@ package com.comprido.imagetool.model
 			_sectionList = new Vector.<SectionData>();
 			_so = new Sharer(Main.SO_NAME);
 
-			var xmlLoader:DataLoader = new DataLoader(serverLocation+"1/"+xmlFile);
+			var xmlLoader:DataLoader = new DataLoader();
 			xmlLoader.addEventListener(DataLoadedEvent.FILE_DATA, onXMLLoaded);
 			xmlLoader.addEventListener(IOErrorEvent.IO_ERROR, onXMLLoadFail);
+			xmlLoader.load(serverLocation+"1/"+xmlFile);
 		}
 		
-		private function onXMLLoadFail(event:Event):void 
+		private function onXMLLoadFail(event:IOErrorEvent):void 
 		{
 			_relay.dispatchEvent(new CreateSectionEvent(_currentSection, currentPage, Relay.NEW_SECTION));
 		}
@@ -87,6 +88,11 @@ package com.comprido.imagetool.model
 		
 		private function parseXML(xml:XML):void 
 		{
+			if (xml.length <= 0)
+			{
+				return;
+			}
+			
 			var versionXMLList:XMLList = xml.version;
 			var indexXMLList:XMLList = xml.index;
 			var sectionXMLList:XMLList = xml.section;
@@ -116,9 +122,7 @@ package com.comprido.imagetool.model
 			for each (var thumbElement:XML in thumbsXMLList) 
 			{
 				var id:Number = thumbElement.attribute("id");
-				
-				Debug.log(id);
-			
+
 				if (!_thumbList[id])
 				{
 					_thumbList[id] = new ThumbData(id);
@@ -199,6 +203,25 @@ package com.comprido.imagetool.model
 			}
 		}
 		
+		public function loadImage(url:String):void
+		{
+			var al:AssetLoader = new AssetLoader(url);
+			
+			al.addEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
+			al.addEventListener(IOErrorEvent.IO_ERROR, imageLoadIoErrorHandler);
+			al.load();
+		}
+		
+		private function imageLoadIoErrorHandler(e:Event):void 
+		{
+			_relay.dispatchEvent(new SystemMessageEvent("Error Loading Image.\nPlease try again.", 5000, true, SystemMessageEvent.MESSAGE));
+		}
+		
+		private function imageLoadCompleteHandler(event:AssetLoadedEvent):void 
+		{
+			dispatchEvent(event);
+		}
+		
 		public function launchUserURL():void
 		{
 			navigateToURL(new URLRequest(serverLocation))
@@ -268,7 +291,7 @@ package com.comprido.imagetool.model
 		{			
 			init();
 		}
-				
+
 		public function getFileLocation(id:Number, type:String):String
 		{
 			var rtn:String;

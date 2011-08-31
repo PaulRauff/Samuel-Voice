@@ -34,7 +34,8 @@ package com.comprido.imagetool.controller
 	import flash.filesystem.*;
 	import flash.geom.*;
 	import flash.net.URLRequest;
-	import flash.utils.*;	 
+	import flash.utils.*;
+	import com.paulrauff.utils.events.*;
 	 
 	public class Controller
 	{
@@ -42,7 +43,7 @@ package com.comprido.imagetool.controller
 		private var _m:Model;
 		private var _dnd:DragAndDrop;
 		private var _timer:Timer;
-		private var _tileClicked:ImageCell;
+		private var _selectedImageCell:ImageCell;
 		private var _lastDownPoint:Point = new Point();
 		
 		private var _soundFilePlayer:SoundFilePlayer = new SoundFilePlayer();
@@ -61,24 +62,57 @@ package com.comprido.imagetool.controller
 			relay.addEventListener(SystemMessageEvent.MESSAGE, SystemMessageEventReceived);
 		}
 		
-		public function setSave():void
+		public function initDragAndDrop():void
 		{
-			Debug.log("_m.hasSaved::"+_m.hasSaved);
+			if (_dnd)
+			{
+				_dnd.removeEventListener(FileDroppedEvent.FILE_READY, onFileReady);
+				_dnd = null;
+			}
+			
+			_dnd = new DragAndDrop();
+			_dnd.addEventListener(FileDroppedEvent.FILE_READY, onFileReady);
+		}
+		
+		public function initSection():void
+		{
 			var hs:Boolean = _m.hasSaved;	
 			_m.hasSaved = hs;
+			
+			hasImage = false;
+			hasSound = false;
+			
+			if (currentSection < 0)
+			{
+				tempThumb = null;
+			}			
+			else if (tempThumb)
+			{
+				if(tempThumb.bitmapFileLocaton.length > 0)
+				{
+					//load the current img file in to the place holder
+					_m.addEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
+					_m.loadImage(tempThumb.bitmapFileLocaton);
+					hasImage = true;
+				}
+				
+				if (tempThumb.soundFileLocaton.length > 0)
+				{
+					//set the mp3 play to visible
+					_relay.dispatchEvent(new SetMP3ButtonVisibiltyEvent(true, Relay.MP3_BUTTON_VISIBILITY_CHANGE));
+					hasSound = true;
+				}
+				
+				if (tempThumb.description.length > 0)
+				{
+					_relay.dispatchEvent(new SetThumbDescriptionEvent(tempThumb.description, Relay.SET_THUMB_DESCRIPTION));	
+				}
+			}
+			
+			checkAddVisiblity();
 		}
-		
-		//view events
-		public function setServer(event:Event):void
-		{
-			_m.serverLocation = event.target.text;
-		}
-		
-		public function getServer():String
-		{
-			return _m.serverLocation;
-		}
-		
+
+		//view events		
 		public function onPlaySoundClicked(event:MouseEvent):void
 		{
 			if(tempThumb.soundFile)
@@ -95,13 +129,13 @@ package com.comprido.imagetool.controller
 		{
 			var key:uint = event.keyCode;
 
-			if (_tileClicked)
+			if (_selectedImageCell)
 			{
 				switch (key) 
 				{
 					case 46:
 						_m.hasSaved = false;
-						currentSectionThumbIDList.splice(_tileClicked.listData.index, 1);
+						currentSectionThumbIDList.splice(_selectedImageCell.listData.index, 1);
 						_relay.dispatchEvent(new TileMiddleClickEvent(null, Relay.MOUSE_MIDDLE_CLICK_TILE));
 						break;
 				}
@@ -117,22 +151,19 @@ package com.comprido.imagetool.controller
 		{
 			if (event.target is ImageCell)
 			{
-				var imgCell:ImageCell = ImageCell(event.target);
-				currentSectionThumbIDList.splice(imgCell.listData.index, 1);
-				_relay.dispatchEvent(new TileMiddleClickEvent(imgCell, Relay.MOUSE_MIDDLE_CLICK_TILE));
-				_m.hasSaved = false;
+				deleteCell(ImageCell(event.target));
 			}
 		}
-		
+
 		public function onTileListMouseDown(event:MouseEvent):void
 		{
 			if (event.target is ImageCell)
 			{
-				_tileClicked = ImageCell(event.target);
-				_lastDownPoint.x = _tileClicked.mouseX;
-				_lastDownPoint.y = _tileClicked.mouseY;
+				_selectedImageCell = ImageCell(event.target);
+				_lastDownPoint.x = _selectedImageCell.mouseX;
+				_lastDownPoint.y = _selectedImageCell.mouseY;
 
-				_relay.dispatchEvent(new TileMouseDownEvent(_tileClicked, Relay.MOUSE_DOWN_TILE));
+				_relay.dispatchEvent(new TileMouseDownEvent(_selectedImageCell, Relay.MOUSE_DOWN_TILE));
 			}
 		}
 		
@@ -140,14 +171,13 @@ package com.comprido.imagetool.controller
 		{
 			if (event.target is ImageCell)
 			{
-
-				_tileClicked = ImageCell(event.target);
+				_selectedImageCell = ImageCell(event.target);
 				
 				//start 500ms timer if timer obj is null
 				if (!_timer)
 				{					
 					//if it hasn't moved, start the timer for the double click check
-					if (_lastDownPoint.x == _tileClicked.mouseX && _lastDownPoint.y == _tileClicked.mouseY)
+					if (_lastDownPoint.x == _selectedImageCell.mouseX && _lastDownPoint.y == _selectedImageCell.mouseY)
 					{
 						_timer = new Timer(200, 1);
 						_timer.addEventListener(TimerEvent.TIMER_COMPLETE, clickTimerCompleteHandler);
@@ -155,7 +185,7 @@ package com.comprido.imagetool.controller
 					}
 					else
 					{
-						_relay.dispatchEvent(new TileSingleClickEvent(_tileClicked, Relay.SINGLE_CLICK_TILE));	
+						_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));	
 					}
 				}
 				else //if timer not null, fire dbl click
@@ -166,20 +196,59 @@ package com.comprido.imagetool.controller
 					
 					if (_m.currentSection >= 0 && event.target is ImageCell)
 					{
-						getThumbData(currentSectionThumbIDList[_tileClicked.listData.index]).onServer = false;
+						getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).onServer = false;
 						_m.hasSaved = false;
 
+						//if we're in add to page state, add at the click index
 						if (_m.addButtonVisibility)
 						{
-							addThumbToPage(null, _tileClicked.listData.index);
+							addThumbToPage(null, _selectedImageCell.listData.index);
 						}
-						else
+						else //edit the thumb
 						{
-							_relay.dispatchEvent(new TileDoubleClickEvent(_tileClicked, Relay.DOUBLE_CLICK_TILE));		
+							var tid:Number = getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id;
+							
+							startThumbEdit(tid);
+							
+							_relay.dispatchEvent(new TileDoubleClickEvent(_selectedImageCell, Relay.DOUBLE_CLICK_TILE));
 						}
 					}
 				}
 			}
+		}
+		
+		private function startThumbEdit(tid:Number):void 
+		{
+			//clear and clone the clicked thumb into tmp
+			tempThumb = null;
+			var id:Number = 0;
+			
+			if (_m.getThumbData(tid).isShortcut)
+			{
+				id = _m.getThumbData(tid).id;
+			}
+			else
+			{
+				id = getTime();
+			}
+			
+			tempThumb = _m.getThumbData(tid).clone(id);
+
+			hasImage = true;
+			hasSound = true;
+			
+			tempThumb.bitmapFileLocaton = _m.getFileLocation(tid, "img");
+			
+			//load the current img file in to the place holder
+			_m.addEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
+			_m.loadImage(tempThumb.bitmapFileLocaton);
+
+			//set the mp3 play to visible
+			_relay.dispatchEvent(new SetMP3ButtonVisibiltyEvent(true, Relay.MP3_BUTTON_VISIBILITY_CHANGE));	
+			
+			_relay.dispatchEvent(new SetThumbDescriptionEvent(tempThumb.description, Relay.SET_THUMB_DESCRIPTION));	
+			
+			deleteCell(_selectedImageCell);
 		}
 		
 		private function SystemMessageEventReceived(event:SystemMessageEvent):void
@@ -203,6 +272,13 @@ package com.comprido.imagetool.controller
 			}
 		}
 		
+		private function deleteCell(imgCell:ImageCell):void
+		{
+			currentSectionThumbIDList.splice(imgCell.listData.index, 1);
+			_relay.dispatchEvent(new TileMiddleClickEvent(imgCell, Relay.MOUSE_MIDDLE_CLICK_TILE));
+			_m.hasSaved = false;			
+		}
+		
 		private function hideLightbox(event:TimerEvent):void 
 		{
 			_relay.dispatchEvent(new SystemMessageEvent("ok", -1, false, SystemMessageEvent.MESSAGE));
@@ -211,20 +287,20 @@ package com.comprido.imagetool.controller
 		private function clickTimerCompleteHandler(event:TimerEvent):void 
 		{
 			_timer = null;
-			
+
 			if (_m.currentSection < 0)
 			{
-				loadSection(_tileClicked.listData.index);
+				loadSection(_selectedImageCell.listData.index);
 			}
 			else
 			{
-				if (getThumbData(currentSectionThumbIDList[_tileClicked.listData.index]).isShortcut)
+				if (getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).isShortcut)
 				{
-					loadSectionID(getThumbData(currentSectionThumbIDList[_tileClicked.listData.index]).id);
+					loadSectionID(getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id);
 				}
 				else
 				{				
-					_relay.dispatchEvent(new TileSingleClickEvent(_tileClicked, Relay.SINGLE_CLICK_TILE));
+					_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));
 				}
 			}
 		}
@@ -241,7 +317,7 @@ package com.comprido.imagetool.controller
 
 		public function addThumbToPage(event:MouseEvent, ii:int = 0):void
 		{
-			var td:ThumbData = new ThumbData(tempThumb.id);
+			var td:ThumbData = tempThumb.clone(tempThumb.id);
 			td.page = currentPage;
 
 			writeBitmapToLocalCache(tempThumb.bitmap, td.id);
@@ -249,12 +325,17 @@ package com.comprido.imagetool.controller
 			td.description = tempThumb.description;
 			td.onServer = false;
 
-			currentSectionThumbIDList.unshift(td.id);
+			currentSectionThumbIDList.splice(ii, 0, td.id);
 			setThumbData(td.id, td);
 			
 			_relay.dispatchEvent(new TileAddEvent(td.description, tempThumb.bitmap, ii, Relay.ADD_TILE));
+			
+			tempThumb = null;
+			hasImage = false;
+			hasSound = false;
+			
+			_m.addButtonVisibility = false;			
 			_m.hasSaved = false;
-			_m.addButtonVisibility = false;
 		}
 		
 		public function addLibraryThumbToPage(event:MouseEvent):void
@@ -291,7 +372,6 @@ package com.comprido.imagetool.controller
 				
 				_relay.dispatchEvent(new TileAddEvent(imgCell.data.label, getFileLocation(tid, "img"), 0, Relay.ADD_TILE));
 				_m.hasSaved = false;
-				
 			}
 		}
 
@@ -318,6 +398,7 @@ package com.comprido.imagetool.controller
 		
 		public function setDescription(event:Event = null):void
 		{
+			newTempThumb();
 			tempThumb.description = event.target.text;
 			checkAddVisiblity();
 			_m.hasSaved = false;
@@ -329,6 +410,14 @@ package com.comprido.imagetool.controller
 			_m.hasSaved = false;
 		}
 		
+		public function newTempThumb():void
+		{
+			if (!tempThumb)
+			{
+				tempThumb = new ThumbData(getTime());
+			}
+		}
+
 		public function checkAddVisiblity():void
 		{
 			_m.addButtonVisibility = (hasSound && hasImage);
@@ -340,52 +429,18 @@ package com.comprido.imagetool.controller
 		{
 			_soundFilePlayer.playSoundFile(getFileLocation(id, "snd"));
 		}
-		
-		private function onSoundDropped(event:NewSoundEvent):void
-		{
-			_soundFilePlayer.stopSound();
-			hasSound = true;
-			
-			if (event.soundFile)
-			{
-				tempThumb.soundFile = event.soundFile;
-			}
-			else
-			{
-				Debug.warning("NO SOUND FILE");
-			}
-			
-			checkAddVisiblity();
-			
-			_relay.dispatchEvent(new SetMP3ButtonVisibiltyEvent(true, Relay.MP3_BUTTON_VISIBILITY_CHANGE));	
-		}
-		
-		public function initDragAndDrop():void
-		{
-			if (_dnd)
-			{
-				_dnd.removeEventListener(FileDroppedEvent.FILE_READY, onFileReady);
-				_dnd = null;
-			}
-			
-			_dnd = new DragAndDrop();
-			_dnd.addEventListener(FileDroppedEvent.FILE_READY, onFileReady);
-		}
-		
+
 		//once a file has dropped
 		private function onFileReady(event:FileDroppedEvent):void
-		{
-			var fileLoader:Loader = new Loader();	
-			var req:URLRequest = new URLRequest(event.file.url);  
-			
+		{			
 			switch(event.file.extension.toLowerCase())
 			{
 				case "png" :
 				case "jpg" :
 				case "jpeg" :
 				case "gif" :
-					fileLoader.load(req);
-					fileLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, onImageLoaded);
+					_m.addEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
+					_m.loadImage(event.file.url);
 					break;
 				case "mp3" :
 				case "wav" :
@@ -396,18 +451,22 @@ package com.comprido.imagetool.controller
 			}
 		}
 		
-		private function onImageLoaded(event:Event):void 
+		private function imageLoadCompleteHandler(event:AssetLoadedEvent):void 
 		{
-			var imageLoader:LoaderInfo = LoaderInfo(event.target);
-			
-			if (imageLoader.content is Bitmap) 
+			_m.removeEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
+
+			if (event.fileData is Bitmap) 
 			{
-				var bmp:Bitmap = resizeBitmap(Bitmap(imageLoader.content));
+				newTempThumb();
+				var bmp:Bitmap = resizeBitmap(Bitmap(event.fileData));
+				tempThumb.bitmap = bmp;
+				hasImage = true;
+				checkAddVisiblity();
 
 				_relay.dispatchEvent(new NewBitmapDataEvent(bmp, NewBitmapDataEvent.BITMAP_DATA));
 			}
 		}
-		
+
 		private function resizeBitmap(bm:Bitmap):Bitmap
 		{
 			bm.smoothing = true;
@@ -418,6 +477,24 @@ package com.comprido.imagetool.controller
 			bm.height = bm.height * rat;
 
 			return bm;
+		}
+		
+		private function onSoundDropped(event:NewSoundEvent):void
+		{
+			if (event.soundFile)
+			{
+				newTempThumb();
+				_soundFilePlayer.stopSound();
+				hasSound = true;				
+				tempThumb.soundFile = event.soundFile;
+				checkAddVisiblity();
+			
+				_relay.dispatchEvent(new SetMP3ButtonVisibiltyEvent(true, Relay.MP3_BUTTON_VISIBILITY_CHANGE));					
+			}
+			else
+			{
+				Debug.warning("NO SOUND FILE");
+			}
 		}
 		
 		public function getScaleRatio(dispObj:DisplayObject, compareSize:Number):Number
@@ -481,7 +558,7 @@ package com.comprido.imagetool.controller
 			}
 
 			//move to model
-			var jpgEncoder:JPGEncoder = new JPGEncoder(80);
+			var jpgEncoder:JPGEncoder = new JPGEncoder(100);
 			var jpgStream:ByteArray = jpgEncoder.encode(bm.bitmapData);
 
 			var imageDir:File = File.applicationStorageDirectory.resolvePath("cachedimages/");
@@ -561,6 +638,8 @@ package com.comprido.imagetool.controller
 		public function loadHistoryFile(event:Event):void
 		{
 			var id:Number = Number(event.target.getItemAt(event.target.selectedIndex).value);
+			
+			Debug.log("LOAD::"+id);
 			
 			if (!isNaN(id))
 			{
@@ -724,6 +803,15 @@ package com.comprido.imagetool.controller
 			_m.createSection(id);
 		}
 		
+		public function setServer(event:Event):void
+		{
+			_m.serverLocation = event.target.text;
+		}
+		
+		public function getServer():String
+		{
+			return _m.serverLocation;
+		}		
 		
 		public function get hasSound():Boolean 
 		{

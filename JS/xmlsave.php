@@ -7,7 +7,7 @@
 
 		if(isset($_POST["bakxml"]))
 		{
-			rename($filename, "1/xml/".$_POST["bakxml"].".xml");
+			rename($dirname.$filename, $dirname.$_POST["bakxml"].".xml");
 		}
 		
 		xmlWriter($dirname, $filename, $xmlpost);

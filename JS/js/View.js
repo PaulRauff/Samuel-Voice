@@ -45,6 +45,7 @@ SVMain.View = function(){
 		
 		_evt = this.evt;
 		_isTouch = isTouch();
+		_audio = new Array();
 		
 		$("#menu_holder").click(function () {
 			_evt.fire(SVMain.View.MENU_CLICKED);
@@ -85,7 +86,7 @@ SVMain.View = function(){
 				_evt.fire(SVMain.View.THUMB_TOUCH_END, thumbID);
 				break;
 			case "mousedown":
-				_evt.fire(SVMain.View.THUMB_TOUCH_START, thumbID, 0, 0);
+				_evt.fire(SVMain.View.THUMB_TOUCH_START, thumbID, event.pageX, event.pageY);
 				break;
 			case "mouseup":
 				_evt.fire(SVMain.View.THUMB_TOUCH_END, thumbID);
@@ -174,23 +175,21 @@ SVMain.View = function(){
 		}
 	}
 	
-	function initSound(src){
-		//console.log(src);
+	function initSound(tid){
 		
-		if(!_audio || _audio.currentTime === 0 || _audio.duration === _audio.currentTime){
-			//console.log("sound ok");
-			_audio = null;
-			_audio = document.createElement('audio');
-			_audio.src = src;
-			_audio.load();
+		if(!_audio[tid]){
+			_audio[tid] = null;
+			_audio[tid] = document.createElement('audio');
+			_audio[tid].src = "1/sound/"+tid+".mp3";
 		}
+		
+		_audio[tid].load();
 	}
 
-	function playSound(){		
+	function playSound(tid){		
 		//console.log("playSound");
-		if(_audio && (_audio.currentTime === 0 || _audio.duration === _audio.currentTime)){
-			//console.log("beep");
-			_audio.play();
+		if(_audio[tid] && (_audio[tid].currentTime === 0 || _audio[tid].duration === _audio[tid].currentTime)){
+			_audio[tid].play();
 		}
 	}
 	
@@ -198,8 +197,10 @@ SVMain.View = function(){
 		$("#thumb_holder").css("left", thumbX);
 	}
 	
-	function setThumbSpinner(html){
-		$("#thumb_spinner").html(html);
+	function setThumbSpinner(html, animTime){
+		$(".spinner_animation").remove();
+		$("#thumb_spinner").before(html);
+		$(".spinner_animation").css("-webkit-animation-duration", animTime+"s");
 	}
 	
 	function scrollVertical(scrollY){
@@ -226,8 +227,16 @@ SVMain.View = function(){
 	}
 	
 	function destroy(){
+		var ii = 0;
+		
 		$("#page_data").unbind('click');
 		$("#page_data").html("");
+		
+		var len = _audio.length;
+		
+		for(ii = 0; ii < len; ii++){
+			_audio[ii] = null;
+		}
 	}
 
 	return{
