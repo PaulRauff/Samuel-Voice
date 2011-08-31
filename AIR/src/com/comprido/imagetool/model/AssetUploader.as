@@ -55,6 +55,32 @@ package com.comprido.imagetool.model
 			makeXML();
 		}
 		
+		private function thumbInUse(thumbID:Number):Boolean
+		{			
+			for each(var sd:SectionData in _sectionList)
+			{
+				var pageLength:int = sd.totalPages + 1;
+
+				//loop through each page
+				for (var jj:int = 0; jj < pageLength; jj++)
+				{
+					if (sd.getThumbIDList(jj).length > 0)
+					{
+						//loop through the thumbs
+						for each(var tid:Number in sd.getThumbIDList(jj))
+						{
+							if (tid == thumbID)
+							{
+								return true;
+							}
+						}
+					}
+				}
+			}
+			
+			return false;
+		}
+		
 		private function makeXML():void 
 		{
 			//create a list of id's to upload 
@@ -78,18 +104,21 @@ package com.comprido.imagetool.model
 			//loop through the thumbs
 			for each(var td:ThumbData in _thumbList)
 			{
-				thumbStr += "\n\t\t<thumb id='" + td.id + "' com='"+int(td.isCommon)+"' scut='"+int(td.isShortcut)+"'>";
+				if (thumbInUse(td.id))
+				{				
+					thumbStr += "\n\t\t<thumb id='" + td.id + "' com='"+int(td.isCommon)+"' scut='"+int(td.isShortcut)+"'>";
 
-				if(td.description.length > 0)
-					thumbStr += "<![CDATA[" + td.description + "]]>";
+					if(td.description.length > 0)
+						thumbStr += "<![CDATA[" + td.description + "]]>";
 
-				thumbStr += "</thumb>";
+					thumbStr += "</thumb>";
 				
-				//if the current thumb isn't on the server, add it to the list of thumbs to upload
-				if (!td.onServer)
-				{
-					if(_uploadList.indexOf(td.id) < 0)
-						_uploadList.push(td.id);
+					//if the current thumb isn't on the server, add it to the list of thumbs to upload
+					if (!td.onServer)
+					{
+						if(_uploadList.indexOf(td.id) < 0)
+							_uploadList.push(td.id);
+					}
 				}
 			}
 			

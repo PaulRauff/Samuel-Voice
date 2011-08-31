@@ -87,8 +87,8 @@ package com.comprido.imagetool.model
 		}
 		
 		private function parseXML(xml:XML):void 
-		{
-			if (xml.length <= 0)
+		{			
+			if (xml.toString().length <= 0)
 			{
 				return;
 			}
