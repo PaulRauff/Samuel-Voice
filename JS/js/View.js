@@ -24,7 +24,7 @@ SVMain.View = function(){
 	var _audio;
 	var _isTouch = false;
 	var _moveX = 0;
-	
+
 	SVMain.View.THUMB_INDEX_CLICKED = "THUMB_INDEX_CLICKED";
 	SVMain.View.THUMB_CLICKED = "THUMB_CLICKED";
 	SVMain.View.THUMB_TOUCH_START = "THUMB_TOUCH_START";
@@ -45,7 +45,7 @@ SVMain.View = function(){
 		
 		_evt = this.evt;
 		_isTouch = isTouch();
-		_audio = new Array();
+		_audio = document.createElement('audio');
 		
 		$("#menu_holder").click(function () {
 			_evt.fire(SVMain.View.MENU_CLICKED);
@@ -176,21 +176,18 @@ SVMain.View = function(){
 	}
 	
 	function initSound(tid){
-		
-		if(!_audio[tid]){
-			_audio[tid] = null;
-			_audio[tid] = document.createElement('audio');
-			_audio[tid].src = "1/sound/"+tid+".mp3";
-		}
-		
-		_audio[tid].load();
+		console.log("initSound");
+		_audio.pause();
+		_audio.position = 0;
+		_audio.src = "1/sound/"+tid+".mp3";
+		_audio.load();
 	}
 
-	function playSound(tid){		
-		//console.log("playSound");
-		if(_audio[tid] && (_audio[tid].currentTime === 0 || _audio[tid].duration === _audio[tid].currentTime)){
-			_audio[tid].play();
-		}
+	function playSound(tid){
+		_audio.pause();
+		_audio.position = 0;
+		_audio.play();
+		console.log(_audio.src);
 	}
 	
 	function moveThumbs(thumbX){

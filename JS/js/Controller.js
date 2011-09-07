@@ -26,6 +26,7 @@ SVMain.Controller = function(){
 	var _moveX = 0;
 	var _moveY = 0;
 	var _startTouchTime = 0;
+	var _isSpinning = false;
 	
 	_Controller();
 	function _Controller(){
@@ -149,6 +150,14 @@ SVMain.Controller = function(){
 		}
 		
 		_v.setThumbSpinner(html, delay/2);
+		_isSpinning = true;
+	}
+	
+	function stopSpinner(){
+		if(_isSpinning){
+			_v.setThumbSpinner("");
+			_isSpinning = false;
+		}
 	}
 
 	function thumbReset(){
@@ -163,19 +172,22 @@ SVMain.Controller = function(){
 	function onThumbTouchStart(args){
 		
 		if(args.length === 4){
+			//_touchTimer = setTimeout(function() { ps(args[1]); }, 500);
+			
 			_v.initSound(args[1]);
-			_startMoveX = args[2];
 			
-			startSpinner(args[1], args[2], args[3]);
-			
-			_startTouchTime = new Date().getTime();
-			
+			_startMoveX = _moveX = args[2];
 			_startMoveY = args[3];
+			_startTouchTime = new Date().getTime();
+
+			if(args[1] && !_m.getThumbShortcut(args[1])){
+				startSpinner(args[1], args[2], args[3]);
+			}
 		}
 	}
 
 	function onThumbTouchMove(args){
-		
+
 		_moveX = args[2];
 		var mv = _startMoveX - _moveX;
 		var cp = _m.getCurrentPage() +1;
@@ -193,19 +205,21 @@ SVMain.Controller = function(){
 			}
 		}
 		
-		_v.scrollVertical(_startMoveY - args[3]);
+		if(Math.abs(mv) > 20){
+			stopSpinner();
+		}
 		
-		_v.setThumbSpinner("");
+		_v.scrollVertical(_startMoveY - args[3]);
 	}
 
 	function onThumbTouchEnd(args){
-				
+
 		var mv = Math.abs(_startMoveX - _moveX);
 		
-		if(mv < 500 || _moveX === 0){
+		if(mv < 500){
 			_v.moveThumbs(0);
 						
-			if(_moveX === 0 && args.length >= 1){
+			if(args[1] && mv < 50 && args.length >= 1){
 				onThumbClicked(args);
 			}
 		}
@@ -214,7 +228,7 @@ SVMain.Controller = function(){
 		_moveX = 0;
 		_startMoveX = 0;
 		
-		_v.setThumbSpinner("");
+		stopSpinner();
 	}
 	
 	function onMenuClicked(args){
@@ -237,6 +251,7 @@ SVMain.Controller = function(){
 	}
 	
 	function onThumbClicked(args){
+
 		var tid = args[1];
 
 		if(_m.getThumbShortcut(tid)){

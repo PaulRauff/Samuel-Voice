@@ -26,7 +26,7 @@ SVMain.Model = function(){
 	var _thumbData = new Array();
 	var _sectionData = new Array();
 	var _menuDown = true;
-	var _touchTime = 500;
+	var _touchTime = 300;
 	
 	SVMain.Model.XML_READY = "XML_READY";
 	SVMain.Model.SECTION_READY = "SECTION_READY";
@@ -38,9 +38,7 @@ SVMain.Model = function(){
 	}
 	
 	function loadXML()
-	{
-		//console.log(">loadXML "+SVMain.XML_URL);
-		
+	{		
 		$.ajax({
 			type: "GET",
 			url: SVMain.XML_URL,

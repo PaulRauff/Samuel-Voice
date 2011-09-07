@@ -262,7 +262,10 @@ package com.comprido.imagetool.model
 			
 			for each(var td:ThumbData in _thumbList)
 			{
-				dp.addItem( { label:td.description, source:getFileLocation(td.id, "img"), id:td.id } );
+				if(!td.isShortcut)
+				{
+					dp.addItem( { label:td.description, source:getFileLocation(td.id, "img"), id:td.id } );
+				}
 			}
 			
 			dp.sortOn("label");

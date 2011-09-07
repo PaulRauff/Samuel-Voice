@@ -21,8 +21,12 @@
 
 	import flash.display.*;
 	import com.carlcalderon.arthropod.Debug;
-	import com.comprido.imagetool.view.*;	 
-	 
+	import com.comprido.imagetool.view.*;
+	
+import flash.filesystem.*;
+import flash.utils.ByteArray; 
+import mx.utils.*;
+	
 	public class Main extends Sprite
 	{
 		private static var _main:Main;
