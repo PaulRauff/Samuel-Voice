@@ -27,11 +27,12 @@ package com.comprido.imagetool.view
 	import com.paulrauff.utils.*;
 	import fl.controls.*;
 	import fl.controls.listClasses.ImageCell;
-	import flash.display.Sprite;
+	import flash.display.*;
 	import flash.events.*;
 	import flash.text.*;
 	import com.paulrauff.utils.sharedObject.*;
 	import fl.data.DataProvider;
+	import flash.system.*;
 
 	public class IndexView extends BaseView implements ISection
 	{		
@@ -42,33 +43,40 @@ package com.comprido.imagetool.view
 		private var _size_cmp:NumericStepper;
 		private var _font_cmp:NumericStepper;
 		private var _history_cmp:ComboBox;
-		private var _test_url_btn:Button;
+		private var _test_url_btn:SimpleButton;
 		
 		private var _lightbox_mc:MovieClip;
 		private var _lightbox_txt:TextField;
 		private var _server_txt:TextField;
+
+		[Embed(source="..//..//..//..//..//bin//image_tool.swf",symbol="IndexViewLib")]
+		private var IndexViewSWF:Class;
 		
 		public function IndexView(c:Controller) 
 		{
 			super.setC(c, -1, 0);
-	
-			init();	
+
+			init();
 		}
 		
 		private function init():void 
 		{
-			_save_btn = SimpleButton(Validate.element(save_btn, "save_btn missing"));
-			_reset_btn = SimpleButton(Validate.element(reset_btn, "reset_btn missing"));
+			_base = new IndexViewSWF();
+			addChild(_base);
 			
-			_size_cmp = NumericStepper(Validate.element(size_cmp, "size_cmp missing"));
-			_font_cmp = NumericStepper(Validate.element(font_cmp, "font_cmp missing"));
+			_save_btn = SimpleButton(Validate.element(_base["save_btn"], "save_btn missing"));
+			_reset_btn = SimpleButton(Validate.element(_base["reset_btn"], "reset_btn missing"));
 			
-			_history_cmp = ComboBox(Validate.element(history_cmp, "history_cmp missing"));
-			_test_url_btn = Button(Validate.element(test_url_btn, "test_url_btn missing"));
+			_size_cmp = super.fixNumericStepper(_base, "size_cmp", 1000, 10, 10);
+			_font_cmp = super.fixNumericStepper(_base, "font_cmp", 48, 8, 1);
+			
+			_history_cmp = super.fixComboBox(_base, "history_cmp");
+			
+			_test_url_btn = SimpleButton(Validate.element(_base["test_url_btn"], "test_url_btn missing"));
 
-			_lightbox_mc = MovieClip(Validate.element(lightbox_mc, "lightbox_mc missing"));
+			_lightbox_mc = MovieClip(Validate.element(_base["lightbox_mc"], "lightbox_mc missing"));
 			_lightbox_txt = TextField(Validate.element(_lightbox_mc["lightbox_txt"], "lightbox_txt missing"));
-			_server_txt = TextField(Validate.element(server_txt, "_server_txt missing"));
+			_server_txt = TextField(Validate.element(_base["server_txt"], "_server_txt missing"));
 			
 			_server_txt.text = _c.getServer();
 			
@@ -116,9 +124,9 @@ package com.comprido.imagetool.view
 			_tilelist.rowHeight = _tilelist.columnWidth = _c.thumbSize; 
 			_tilelist.columnCount = _c.numCols(_c.thumbSize);
 
-			addChild(_tilelist);
+			_base.addChild(_tilelist);
 			
-			setChildIndex(_lightbox_mc, numChildren - 1);			
+			_base.setChildIndex(_lightbox_mc, numChildren - 1);			
 			_lightbox_mc.visible = false;
 			
 			var len:int = _c.totalSections;
@@ -301,9 +309,11 @@ package com.comprido.imagetool.view
 			
 			if (_tilelist)
 			{
-				removeChild(_tilelist);	
+				_base.removeChild(_tilelist);	
 				_tilelist = null;
 			}
+			
+			removeChild(_base);
 			
 			super.destroy();
 		}

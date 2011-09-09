@@ -76,6 +76,9 @@ package com.comprido.imagetool.view
 		private var _alertBox:AlertBox;
 		
 		private var _imageHolderCoords:Point;
+		
+		[Embed(source="..//..//..//..//..//bin//image_tool.swf",symbol="SectionViewLib")]
+		private var SectionViewSWF:Class;
 
 		public function SectionView(section:int, page:int, c:Controller) 
 		{
@@ -86,33 +89,36 @@ package com.comprido.imagetool.view
 		private function init():void
 		{			
 			_c.initDragAndDrop();
+			
+			_base = new SectionViewSWF();
+			addChild(_base);
 
 			//register components in fla
 			////////////////////////////
-			_save_btn = SimpleButton(Validate.element(save_btn, "save_btn missing"));
-			_reset_btn = SimpleButton(Validate.element(reset_btn, "reset_btn missing"));
-			_new_page_btn = SimpleButton(Validate.element(new_page_btn, "new_page_btn missing"));
-			_close_btn = SimpleButton(Validate.element(close_btn, "close_btn missing"));
-			_play_mp3_btn = SimpleButton(Validate.element(play_mp3_btn, "play_mp3_btn missing"));
-			_add_btn = SimpleButton(Validate.element(add_btn, "add_btn missing"));
-			_page_left_btn = SimpleButton(Validate.element(page_left_btn, "page_left_btn missing"));
-			_page_right_btn = SimpleButton(Validate.element(page_right_btn, "page_right_btn missing"));
-			_open_folder_btn = SimpleButton(Validate.element(open_folder_btn, "open_folder_btn missing"));
-			_library_close_btn = SimpleButton(Validate.element(library_close_btn, "library_close_btn missing"));
-			_open_shortcut_btn = SimpleButton(Validate.element(open_shortcut_btn, "open_shortcut_btn missing"));
+			_save_btn = SimpleButton(Validate.element(_base["save_btn"], "save_btn missing"));
+			_reset_btn = SimpleButton(Validate.element(_base["reset_btn"], "reset_btn missing"));
+			_new_page_btn = SimpleButton(Validate.element(_base["new_page_btn"], "new_page_btn missing"));
+			_close_btn = SimpleButton(Validate.element(_base["close_btn"], "close_btn missing"));
+			_play_mp3_btn = SimpleButton(Validate.element(_base["play_mp3_btn"], "play_mp3_btn missing"));
+			_add_btn = SimpleButton(Validate.element(_base["add_btn"], "add_btn missing"));
+			_page_left_btn = SimpleButton(Validate.element(_base["page_left_btn"], "page_left_btn missing"));
+			_page_right_btn = SimpleButton(Validate.element(_base["page_right_btn"], "page_right_btn missing"));
+			_open_folder_btn = SimpleButton(Validate.element(_base["open_folder_btn"], "open_folder_btn missing"));
+			_library_close_btn = SimpleButton(Validate.element(_base["library_close_btn"], "library_close_btn missing"));
+			_open_shortcut_btn = SimpleButton(Validate.element(_base["open_shortcut_btn"], "open_shortcut_btn missing"));
 			
-			_section_thumb_holder_uil = UILoader(Validate.element(section_thumb_holder_uil, "section_thumb_holder_uil missing"));
-			_thumb_mc = MovieClip(Validate.element(thumb_mc, "thumb_mc missing"));
-			_mp3_mc = MovieClip(Validate.element(mp3_mc, "mp3_mc missing"));
-			_lightbox_mc = MovieClip(Validate.element(lightbox_mc, "lightbox_mc missing"));
+			_section_thumb_holder_uil = UILoader(Validate.element(_base["section_thumb_holder_uil"], "section_thumb_holder_uil missing"));
+			_thumb_mc = MovieClip(Validate.element(_base["thumb_mc"], "thumb_mc missing"));
+			_mp3_mc = MovieClip(Validate.element(_base["mp3_mc"], "mp3_mc missing"));
+			_lightbox_mc = MovieClip(Validate.element(_base["lightbox_mc"], "lightbox_mc missing"));
 		
 			_lightbox_txt = TextField(Validate.element(_lightbox_mc["lightbox_txt"], "lightbox_txt missing"));
-			_title_txt = TextField(Validate.element(title_txt, "title_txt missing"));
-			_description_txt = TextField(Validate.element(description_txt, "description_txt missing"));
+			_title_txt = TextField(Validate.element(_base["title_txt"], "title_txt missing"));
+			_description_txt = TextField(Validate.element(_base["description_txt"], "description_txt missing"));
 
-			_size_cmp = NumericStepper(Validate.element(size_cmp, "size_cmp missing"));
-			_font_cmp = NumericStepper(Validate.element(font_cmp, "font_cmp missing"));
-			_colour_cmp = ColorPicker(Validate.element(colour_cmp, "colour_cmp missing"));
+			_size_cmp = super.fixNumericStepper(_base, "size_cmp", 1000, 10, 10);
+			_font_cmp = super.fixNumericStepper(_base, "font_cmp", 48, 8, 1);
+			_colour_cmp = super.fixColorPicker(_base, "colour_cmp");
 
 			//init states etc
 			/////////////////
@@ -129,7 +135,7 @@ package com.comprido.imagetool.view
 			_add_btn.visible = false;
 
 			_imageHolder = new Sprite();
-			addChild(_imageHolder);
+			_base.addChild(_imageHolder);
 			_imageHolder.x = _thumb_mc.x;
 			_imageHolder.y = _thumb_mc.y;
 
@@ -141,10 +147,10 @@ package com.comprido.imagetool.view
 			_colour_cmp.selectedColor = _c.sectionColour;
 			_colour_cmp.showTextField = false;
 			_bgColour = new Sprite();
-			addChild(_bgColour);
+			_base.addChild(_bgColour);
 			changeBGColour();
 
-			swapChildren(_page_left_btn, _bgColour);
+			_base.swapChildren(_page_left_btn, _bgColour);
 			
 			_library_close_btn.visible = false;
 			
@@ -157,7 +163,7 @@ package com.comprido.imagetool.view
 
 			if (_tilelist)
 			{
-				removeChild(_tilelist);	
+				_base.removeChild(_tilelist);	
 				_tilelist = null;
 			}
 			
@@ -196,11 +202,11 @@ package com.comprido.imagetool.view
 				}
 			}
 
-			addChild(_tilelist);
+			_base.addChild(_tilelist);
 
 			_lightbox_mc.visible = false;
-			setChildIndex(_lightbox_mc, numChildren - 1);
-			swapChildren(_imageHolder, _tilelist);
+			_base.setChildIndex(_lightbox_mc, _base.numChildren - 1);
+			_base.swapChildren(_imageHolder, _tilelist);
 
 			resizeThumbNails();
 			resizeFont();
@@ -288,7 +294,7 @@ package com.comprido.imagetool.view
 		{
 			if (_libraryTilelist)
 			{
-				removeChild(_libraryTilelist);	
+				_base.removeChild(_libraryTilelist);	
 				_libraryTilelist = null;
 			}
 			
@@ -316,8 +322,8 @@ package com.comprido.imagetool.view
 			_library_close_btn.y = _libraryTilelist.y - (_library_close_btn.height * 0.7);
 			_library_close_btn.addEventListener(MouseEvent.CLICK, closeThumbLibrary);
 
-			addChild(_libraryTilelist);
-			setChildIndex(_library_close_btn, numChildren - 1);
+			_base.addChild(_libraryTilelist);
+			_base.setChildIndex(_library_close_btn, _base.numChildren - 1);
 		}
 		
 		private function closeThumbLibrary(event:MouseEvent):void 
@@ -327,7 +333,7 @@ package com.comprido.imagetool.view
 			
 			if (_libraryTilelist)
 			{
-				removeChild(_libraryTilelist);	
+				_base.removeChild(_libraryTilelist);	
 				_libraryTilelist = null;
 			}
 		}
@@ -355,7 +361,7 @@ package com.comprido.imagetool.view
 			square.graphics.endFill();
 		}
 		
-		private function changeMP3ButtonVisibility(event:SetMP3ButtonVisibiltyEvent)
+		private function changeMP3ButtonVisibility(event:SetMP3ButtonVisibiltyEvent):void
 		{			
 			_play_mp3_btn.visible = event.isVisible;
 			_mp3_mc.visible = !_play_mp3_btn.visible;	
@@ -365,7 +371,7 @@ package com.comprido.imagetool.view
 		{
 			var btnLabels:Vector.<String> = new < String > ["save and close", "close without saving", "cancel"];
 			_alertBox = new AlertBox("you haven't saved!", btnLabels);
-			addChild(_alertBox);
+			_base.addChild(_alertBox);
 			_alertBox.x = 512 -(_alertBox.width/2);
 			_alertBox.y = 384 - (_alertBox.height / 2);
 			
@@ -382,7 +388,7 @@ package com.comprido.imagetool.view
 			
 			if (_alertBox)
 			{
-				removeChild(_alertBox);
+				_base.removeChild(_alertBox);
 				_alertBox = null;
 			}
 		}
@@ -672,7 +678,7 @@ package com.comprido.imagetool.view
 					_tilelist.removeItemAt(0);
 				}
 				
-				removeChild(_tilelist);	
+				_base.removeChild(_tilelist);	
 				_tilelist = null;
 			}
 			
@@ -704,7 +710,7 @@ package com.comprido.imagetool.view
 					_imageHolder.removeChildAt(0);
 				}
 				
-				removeChild(_imageHolder);
+				_base.removeChild(_imageHolder);
 				_imageHolder = null;
 			}
 			

@@ -177,13 +177,13 @@ package com.comprido.imagetool.model
 			var bak:String = "" + (new Date().getTime());
 			setHistory(bak);
 			
-			var variables = new URLVariables("xmldata=" + xmlStr + "&bakxml="+bak);
-			var request = new URLRequest(); 
+			var variables:URLVariables = new URLVariables("xmldata=" + xmlStr + "&bakxml="+bak);
+			var request:URLRequest = new URLRequest(); 
 			request.url = _serverLocation+"xmlsave.php"; 
 			request.method = URLRequestMethod.POST; 
 			request.data = variables; 
 
-			var loader = new URLLoader(); 
+			var loader:URLLoader = new URLLoader(); 
 			loader.dataFormat = URLLoaderDataFormat.TEXT; 
 
 			_uploadListCurrent = 0;
@@ -196,7 +196,7 @@ package com.comprido.imagetool.model
 			{ 
 				loader.load(request); 
 			} 
-			catch (error) 
+			catch (error:Error) 
 			{ 
 				Debug.warning("Unable to load URL"); 
 			} 
@@ -226,7 +226,7 @@ package com.comprido.imagetool.model
 				//cache should exist, since this is the creator tool...
 				if (cacheFile.exists)
 				{
-					var urlRequest = new URLRequest(_serverLocation+"jpgsave.php?img="+_uploadList[_uploadListCurrent]+".jpg"); 
+					var urlRequest:URLRequest = new URLRequest(_serverLocation+"jpgsave.php?img="+_uploadList[_uploadListCurrent]+".jpg"); 
 					urlRequest.method = URLRequestMethod.POST; 
 					//cacheFile.addEventListener(ProgressEvent.PROGRESS, uploadProgress); 
 					cacheFile.addEventListener(SecurityErrorEvent.SECURITY_ERROR, uploadImageError); 
@@ -279,7 +279,7 @@ package com.comprido.imagetool.model
 				//cache should exist, since this is the creator tool...
 				if (cacheFile.exists)
 				{
-					var urlRequest = new URLRequest(_serverLocation+"soundsave.php?snd="+_uploadList[_uploadListCurrent]+".mp3"); 
+					var urlRequest:URLRequest = new URLRequest(_serverLocation+"soundsave.php?snd="+_uploadList[_uploadListCurrent]+".mp3"); 
 					urlRequest.method = URLRequestMethod.POST; 
 					//cacheFile.addEventListener(ProgressEvent.PROGRESS, uploadProgress); 
 					cacheFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA, uploadSoundComplete); 

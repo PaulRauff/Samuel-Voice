@@ -91,7 +91,7 @@ package com.comprido.imagetool.view
 			_message_txt.setTextFormat(tf);
 		}
 		
-		private function createButtons(btns:Vector.<String>)
+		private function createButtons(btns:Vector.<String>):void
 		{
 			_buttons = new Vector.<Button>();
 			var pos:int = 5;

@@ -24,11 +24,15 @@ package com.comprido.imagetool.view
 	import flash.events.*;
 	import com.comprido.imagetool.relay.Relay;
 	import com.carlcalderon.arthropod.Debug;
+	import fl.controls.NumericStepper;
+	import fl.controls.ComboBox;
+	import fl.controls.ColorPicker;
 
 	public class BaseView extends Sprite 
 	{
 		protected var _save_btn:SimpleButton;
 		protected var _c:Controller;
+		protected var _base:Sprite;
 		
 		public function BaseView() 
 		{
@@ -71,6 +75,58 @@ package com.comprido.imagetool.view
 		protected function saveAndUpload(event:Event = null):void 
 		{
 			_c.saveAndUpload();			
+		}
+		
+		protected function fixNumericStepper(base:Sprite, childName:String, max:int, min:int, step:int):NumericStepper
+		{
+			var rns:NumericStepper = new NumericStepper();
+			var m:MovieClip = base[childName];
+			
+			rns.width = m.width;
+			rns.height = m.height;
+			rns.x = m.x;
+			rns.y = m.y;
+			
+			rns.maximum = max;
+			rns.minimum = min;
+			rns.stepSize = step;
+			
+			base.removeChild(m);
+			base.addChild(rns);
+			
+			return rns;
+		}
+		
+		protected function fixComboBox(base:Sprite, childName:String):ComboBox
+		{
+			var rcb:ComboBox = new ComboBox();
+			var m:MovieClip = base[childName];
+			
+			rcb.width = m.width;
+			rcb.height = m.height;
+			rcb.x = m.x;
+			rcb.y = m.y;
+			
+			base.removeChild(m);
+			base.addChild(rcb);
+			
+			return rcb;
+		}
+		
+		protected function fixColorPicker(base:Sprite, childName:String):ColorPicker
+		{
+			var rcp:ColorPicker = new ColorPicker();
+			var m:MovieClip = base[childName];
+			
+			rcp.width = m.width;
+			rcp.height = m.height;
+			rcp.x = m.x;
+			rcp.y = m.y;
+			
+			base.removeChild(m);
+			base.addChild(rcp);
+			
+			return rcp;
 		}
 
 		public function destroy():void

@@ -26,7 +26,9 @@ package com.paulrauff.utils.fileloader
 		
 		public function load(url:String):void
 		{
-            var request:URLRequest = new URLRequest(url);
+            Debug.log("DATA LOADING::"+url);
+			
+			var request:URLRequest = new URLRequest(url);
 
 			try 
 			{

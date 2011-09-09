@@ -375,14 +375,14 @@ package com.comprido.imagetool.controller
 			}
 		}
 
-		public function thumbnailResize(event:Event)
+		public function thumbnailResize(event:Event):void
 		{
 			thumbSize = event.target.value;
 			_relay.dispatchEvent(new Event(Relay.THUMB_SIZE_CHANGE));
 			_m.hasSaved = false;
 		}
 		
-		public function fontResize(event:Event)
+		public function fontResize(event:Event):void
 		{
 			fontSize = event.target.value;
 			_relay.dispatchEvent(new Event(Relay.FONT_SIZE_CHANGE));

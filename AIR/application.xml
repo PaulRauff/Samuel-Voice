@@ -1,26 +1,20 @@
-<?xml version="1.0" encoding="utf-8" ?> 
+﻿<?xml version="1.0" encoding="utf-8"?>
 <application xmlns="http://ns.adobe.com/air/application/2.7">
-	
-	<id>com.comprido.imagetool.ImgeTool</id> 
-	<versionNumber>1.0</versionNumber> 
-	<filename>ImgeTool</filename> 
-	
-	<name>ImgeTool</name> 
-	<description></description> 
-	<copyright></copyright> 
-	
-	<initialWindow> 
-		<title>ImgeTool</title> 
-		<content>ImgeTool.swf</content> 
-		<systemChrome>standard</systemChrome> 
-		<transparent>false</transparent> 
-		<visible>true</visible> 
-		<minimizable>true</minimizable> 
-		<maximizable>true</maximizable> 
-		<resizable>true</resizable> 
-	</initialWindow> 
-	
-	<!-- 
+  <id>com.comprido.imagetool.ImageTool</id>
+  <versionNumber>1.0</versionNumber>
+  <filename>ImageTool</filename>
+  <name>ImageTool</name>
+  <initialWindow>
+    <title>ImageTool</title>
+    <content>ImageTool.swf</content>
+    <systemChrome>standard</systemChrome>
+    <transparent>false</transparent>
+    <visible>true</visible>
+    <minimizable>true</minimizable>
+    <maximizable>true</maximizable>
+    <resizable>true</resizable>
+  </initialWindow>
+  <!-- 
 	More options:
 	http://livedocs.adobe.com/flex/3/html/File_formats_1.html#1043413
 	-->
