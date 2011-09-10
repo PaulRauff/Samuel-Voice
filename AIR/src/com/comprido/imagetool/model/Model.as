@@ -53,7 +53,7 @@ package com.comprido.imagetool.model
 		private var _indexThumbSize:int = Main.DEFAULT_THUMB_SIZE;
 		
 		private var _serverLocation:String = "";
-
+		
 		public function Model()
 		{
 			_relay = new Relay();
@@ -678,6 +678,16 @@ package com.comprido.imagetool.model
 			}
 			
 			return _serverLocation;
+		}
+		
+		public function get imageBrowseDirectory():String 
+		{
+			return _so.getSOData("imgDir");
+		}
+		
+		public function set imageBrowseDirectory(value:String):void 
+		{
+			_so.setSOData("imgDir", value);
 		}
 	}
 }

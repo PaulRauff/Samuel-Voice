@@ -61,22 +61,22 @@ package com.comprido.imagetool.view
 		
 		private function init():void 
 		{
-			_base = new IndexViewSWF();
-			addChild(_base);
+			super.base = new IndexViewSWF();
+			addChild(super.base);
 			
-			_save_btn = SimpleButton(Validate.element(_base["save_btn"], "save_btn missing"));
-			_reset_btn = SimpleButton(Validate.element(_base["reset_btn"], "reset_btn missing"));
+			_save_btn = SimpleButton(Validate.element(super.base["save_btn"], "save_btn missing"));
+			_reset_btn = SimpleButton(Validate.element(super.base["reset_btn"], "reset_btn missing"));
 			
-			_size_cmp = super.fixNumericStepper(_base, "size_cmp", 1000, 10, 10);
-			_font_cmp = super.fixNumericStepper(_base, "font_cmp", 48, 8, 1);
+			_size_cmp = super.fixNumericStepper(super.base, "size_cmp", 1000, 10, 10);
+			_font_cmp = super.fixNumericStepper(super.base, "font_cmp", 48, 8, 1);
 			
-			_history_cmp = super.fixComboBox(_base, "history_cmp");
+			_history_cmp = super.fixComboBox(super.base, "history_cmp");
 			
-			_test_url_btn = SimpleButton(Validate.element(_base["test_url_btn"], "test_url_btn missing"));
+			_test_url_btn = SimpleButton(Validate.element(super.base["test_url_btn"], "test_url_btn missing"));
 
-			_lightbox_mc = MovieClip(Validate.element(_base["lightbox_mc"], "lightbox_mc missing"));
+			_lightbox_mc = MovieClip(Validate.element(super.base["lightbox_mc"], "lightbox_mc missing"));
 			_lightbox_txt = TextField(Validate.element(_lightbox_mc["lightbox_txt"], "lightbox_txt missing"));
-			_server_txt = TextField(Validate.element(_base["server_txt"], "_server_txt missing"));
+			_server_txt = TextField(Validate.element(super.base["server_txt"], "_server_txt missing"));
 			
 			_server_txt.text = _c.getServer();
 			
@@ -124,9 +124,9 @@ package com.comprido.imagetool.view
 			_tilelist.rowHeight = _tilelist.columnWidth = _c.thumbSize; 
 			_tilelist.columnCount = _c.numCols(_c.thumbSize);
 
-			_base.addChild(_tilelist);
+			super.base.addChild(_tilelist);
 			
-			_base.setChildIndex(_lightbox_mc, numChildren - 1);			
+			super.base.setChildIndex(_lightbox_mc, numChildren - 1);			
 			_lightbox_mc.visible = false;
 			
 			var len:int = _c.totalSections;
@@ -144,13 +144,15 @@ package com.comprido.imagetool.view
 			
 			_tilelist.setRendererStyle("imagePadding", 5);
 			
+			super.base.setChildIndex(_lightbox_mc, super.base.numChildren - 1);
+			
 			resizeFont();
 			resizeThumbNails();
 			initEvents();
 			
 			_c.initSection();
 		}
-		
+
 		protected override function initEvents():void
 		{
 			_tilelist.addEventListener(MouseEvent.MOUSE_DOWN, _c.onTileListMouseDown);
@@ -309,11 +311,11 @@ package com.comprido.imagetool.view
 			
 			if (_tilelist)
 			{
-				_base.removeChild(_tilelist);	
+				super.base.removeChild(_tilelist);	
 				_tilelist = null;
 			}
 			
-			removeChild(_base);
+			removeChild(super.base);
 			
 			super.destroy();
 		}

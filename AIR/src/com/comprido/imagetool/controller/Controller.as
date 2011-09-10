@@ -133,6 +133,7 @@ package com.comprido.imagetool.controller
 			{
 				switch (key) 
 				{
+					//delete key
 					case 46:
 						_m.hasSaved = false;
 						currentSectionThumbIDList.splice(_selectedImageCell.listData.index, 1);
@@ -194,27 +195,57 @@ package com.comprido.imagetool.controller
 					_timer.removeEventListener(TimerEvent.TIMER_COMPLETE, clickTimerCompleteHandler);
 					_timer = null;
 					
-					if (_m.currentSection >= 0 && event.target is ImageCell)
-					{
-						getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).onServer = false;
-						_m.hasSaved = false;
-
-						//if we're in add to page state, add at the click index
-						if (_m.addButtonVisibility)
-						{
-							addThumbToPage(null, _selectedImageCell.listData.index);
-						}
-						else //edit the thumb
-						{
-							var tid:Number = getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id;
-							
-							startThumbEdit(tid);
-							
-							_relay.dispatchEvent(new TileDoubleClickEvent(_selectedImageCell, Relay.DOUBLE_CLICK_TILE));
-						}
-					}
+					onTileListDoubleClick(event);
 				}
 			}
+		}
+		
+		private function onTileListDoubleClick(event:MouseEvent = null):void
+		{
+			if (_m.currentSection >= 0 && event.target is ImageCell)
+			{
+				getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).onServer = false;
+				_m.hasSaved = false;
+
+				//if we're in add to page state, add at the click index
+				if (_m.addButtonVisibility)
+				{
+					addThumbToPage(null, _selectedImageCell.listData.index);
+				}
+				else //edit the thumb
+				{
+					var tid:Number = getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id;
+					
+					startThumbEdit(tid);
+					
+					_relay.dispatchEvent(new TileDoubleClickEvent(_selectedImageCell, Relay.DOUBLE_CLICK_TILE));
+				}
+			}			
+		}
+		
+		public function onImageBrowserDoubleClick(event:MouseEvent):void
+		{
+			if (event.target is ImageCell)
+			{
+				var imgCell:ImageCell = ImageCell(event.target);
+				
+				_m.addEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
+				_m.loadImage(imgCell.source.toString());
+				_relay.dispatchEvent(new SetThumbDescriptionEvent(formatFileNameIntoTitle(imgCell.label), Relay.SET_THUMB_DESCRIPTION));
+			}
+		}
+		
+		private function formatFileNameIntoTitle(fileName:String):String 
+		{
+			if (fileName.length > 4)
+			{
+				fileName = fileName.substring(0, fileName.length - 4);
+				
+				var myPattern:RegExp = /_/g;  
+				fileName = fileName.replace(myPattern, " ");
+			}
+			
+			return fileName;
 		}
 		
 		private function startThumbEdit(tid:Number):void 
@@ -303,6 +334,16 @@ package com.comprido.imagetool.controller
 					_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));
 				}
 			}
+		}
+		
+		public function openImageBrowser(event:MouseEvent):void 
+		{
+			_relay.dispatchEvent(new Event(Relay.NEW_IMAGE_BROWSER));
+		}
+		
+		public function closeImageBrowser(event:Event):void 
+		{
+			_relay.dispatchEvent(new Event(Relay.CLOSE_IMAGE_BROWSER));
 		}
 
 		public function openThumbLibrary(event:MouseEvent):void
@@ -811,7 +852,17 @@ package com.comprido.imagetool.controller
 		public function getServer():String
 		{
 			return _m.serverLocation;
-		}		
+		}
+		
+		public function set imageBrowseDirectory(dir:String):void
+		{
+			_m.imageBrowseDirectory = dir;
+		}
+		
+		public function get imageBrowseDirectory():String
+		{
+			return _m.imageBrowseDirectory;
+		}	
 		
 		public function get hasSound():Boolean 
 		{

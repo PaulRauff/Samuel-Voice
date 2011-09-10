@@ -43,7 +43,8 @@ package com.comprido.imagetool.relay
 		static public const MOUSE_MIDDLE_CLICK_TILE:String = "MOUSE_MIDDLE_CLICK_TILE";
 		static public const NEW_SECTION_LIBRARY:String = "NEW_SECTION_LIBRARY";
 		static public const SET_THUMB_DESCRIPTION:String = "SET_THUMB_DESCRIPTION";
-		
+		static public const NEW_IMAGE_BROWSER:String = "NEW_IMAGE_BROWSER";
+		static public const CLOSE_IMAGE_BROWSER:String = "CLOSE_IMAGE_BROWSER";		
 	}
 	
 }

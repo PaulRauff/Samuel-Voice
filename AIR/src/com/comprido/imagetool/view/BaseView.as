@@ -77,6 +77,9 @@ package com.comprido.imagetool.view
 			_c.saveAndUpload();			
 		}
 		
+		/*
+		 * Fix for PitA Flex/Flash component import problems
+		 */
 		protected function fixNumericStepper(base:Sprite, childName:String, max:int, min:int, step:int):NumericStepper
 		{
 			var rns:NumericStepper = new NumericStepper();
@@ -97,6 +100,9 @@ package com.comprido.imagetool.view
 			return rns;
 		}
 		
+		/*
+		 * Fix for PitA Flex/Flash component import problems
+		 */
 		protected function fixComboBox(base:Sprite, childName:String):ComboBox
 		{
 			var rcb:ComboBox = new ComboBox();
@@ -113,6 +119,9 @@ package com.comprido.imagetool.view
 			return rcb;
 		}
 		
+		/*
+		 * Fix for PitA Flex/Flash component import problems
+		 */
 		protected function fixColorPicker(base:Sprite, childName:String):ColorPicker
 		{
 			var rcp:ColorPicker = new ColorPicker();
@@ -135,6 +144,16 @@ package com.comprido.imagetool.view
 				_save_btn.removeEventListener(MouseEvent.CLICK, saveAndUpload);
 			
 			_save_btn = null;
+		}
+		
+		public function get base():Sprite 
+		{
+			return _base;
+		}
+		
+		public function set base(value:Sprite):void 
+		{
+			_base = value;
 		}
 		
 	}
