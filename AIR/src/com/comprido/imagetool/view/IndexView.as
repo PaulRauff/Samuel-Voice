@@ -24,15 +24,15 @@ package com.comprido.imagetool.view
 	import com.comprido.imagetool.events.*;
 	import com.comprido.imagetool.relay.Relay;
 	import com.comprido.imagetool.view.interfaces.ISection;
-	import com.paulrauff.utils.*;
+	import com.paulrauff.utils.validate.*;
+	import com.paulrauff.utils.sharedObject.*;
 	import fl.controls.*;
 	import fl.controls.listClasses.ImageCell;
+	import fl.data.DataProvider;
 	import flash.display.*;
 	import flash.events.*;
-	import flash.text.*;
-	import com.paulrauff.utils.sharedObject.*;
-	import fl.data.DataProvider;
 	import flash.system.*;
+	import flash.text.*;
 
 	public class IndexView extends BaseView implements ISection
 	{		
@@ -49,7 +49,7 @@ package com.comprido.imagetool.view
 		private var _lightbox_txt:TextField;
 		private var _server_txt:TextField;
 
-		[Embed(source="..//..//..//..//..//bin//image_tool.swf",symbol="IndexViewLib")]
+		[Embed(source="..//..//..//..//..//bin//skin.swf",symbol="IndexViewLib")]
 		private var IndexViewSWF:Class;
 		
 		public function IndexView(c:Controller) 
@@ -295,15 +295,7 @@ package com.comprido.imagetool.view
 			
 			_reset_btn.removeEventListener(MouseEvent.CLICK, _c.resetCurrentSectionThumbList);
 			
-			_c.relay.removeEventListener(Relay.SINGLE_CLICK_TILE, onTileListSingleClick);	
-			_c.relay.removeEventListener(Relay.DOUBLE_CLICK_TILE, onTileListDoubleClick);	
-			_c.relay.removeEventListener(Relay.MOUSE_DOWN_TILE, onTileListMouseDown);
-			_c.relay.removeEventListener(NewBitmapDataEvent.BITMAP_DATA, onImageDropped);	
-			_c.relay.removeEventListener(Relay.THUMB_SIZE_CHANGE, resizeThumbNails);
-			_c.relay.removeEventListener(Relay.FONT_SIZE_CHANGE, resizeFont);
-			_c.relay.removeEventListener(Relay.DISABLE_SAVE, super.disableSave);
-			_c.relay.removeEventListener(Relay.ENABLE_SAVE, super.enableSave);
-			_c.relay.removeEventListener(SystemMessageEvent.MESSAGE, SystemMessageEventReceived);
+			_c.relay.reset();
 
 			_size_cmp.removeEventListener(Event.CHANGE, _c.thumbnailResize);
 			_font_cmp.removeEventListener(Event.CHANGE, _c.fontResize);

@@ -26,12 +26,13 @@ package com.comprido.imagetool.controller
 	import flash.net.URLRequest;
 	import com.carlcalderon.arthropod.Debug;
 	 
-	public class SoundFilePlayer 
+	public class SoundFilePlayer extends EventDispatcher
 	{
+		static public const SOUND_PLAY_COMPLETE:String = "SOUND_PLAY_COMPLETE";
 		private var _channel:SoundChannel;
 		private var _soundPosition:int = 0;
 
-		public function SoundFilePlayer() 
+		public function SoundFilePlayer()
 		{
 		}
 		
@@ -62,9 +63,7 @@ package com.comprido.imagetool.controller
 			{
 				_soundPosition = 0;
 			}
-			
-			Debug.log("_soundPosition::"+_soundPosition);
-			
+
 			if (_soundPosition > 0)
 			{
 				stopSound();
@@ -90,6 +89,9 @@ package com.comprido.imagetool.controller
 				_channel = null;
 				
 				_soundPosition = 0;
+				
+				dispatchEvent(new Event(SOUND_PLAY_COMPLETE));
+				
 			}
 		}
 		

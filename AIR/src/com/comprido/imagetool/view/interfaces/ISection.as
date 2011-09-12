@@ -18,6 +18,9 @@ package com.comprido.imagetool.view.interfaces
 	 * http://en.wikipedia.org/wiki/BSD_licenses
 
 	 */
+
+	import flash.display.MovieClip;
+	 
 	public interface ISection 
 	{
 		function destroy():void;

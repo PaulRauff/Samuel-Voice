@@ -45,14 +45,14 @@ package com.comprido.imagetool.view
 
 		private function init():void
 		{
-			_c.relay.addEventListener(CreateSectionEvent.NEW_SECTION, createNewSection);
+			_c.relay.addProtectedEventListener(CreateSectionEvent.NEW_SECTION, createNewSection);
 			_c.init();
 		}
 		
 		private function createNewSection(event:CreateSectionEvent):void 
 		{
 			if (_currentSection)
-			{
+			{				
 				_currentSection.destroy();
 				
 				Main.getInstance().removeChild(_currentSection);

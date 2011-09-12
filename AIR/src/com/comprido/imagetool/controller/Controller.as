@@ -26,6 +26,7 @@ package com.comprido.imagetool.controller
 	import com.comprido.imagetool.model.Model;
 	import com.comprido.imagetool.model.ThumbData;
 	import com.comprido.imagetool.relay.Relay;
+	import com.paulrauff.utils.events.*;
 	import fl.controls.*;
 	import fl.controls.listClasses.ImageCell;
 	import fl.data.DataProvider;
@@ -35,7 +36,6 @@ package com.comprido.imagetool.controller
 	import flash.geom.*;
 	import flash.net.URLRequest;
 	import flash.utils.*;
-	import com.paulrauff.utils.events.*;
 	 
 	public class Controller
 	{
@@ -170,6 +170,8 @@ package com.comprido.imagetool.controller
 		
 		public function onTileListMouseUp(event:MouseEvent):void
 		{
+			Debug.log("mouse up");
+			
 			if (event.target is ImageCell)
 			{
 				_selectedImageCell = ImageCell(event.target);
@@ -186,6 +188,7 @@ package com.comprido.imagetool.controller
 					}
 					else
 					{
+						Debug.log("TileSingleClickEvent");
 						_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));	
 					}
 				}
@@ -344,6 +347,16 @@ package com.comprido.imagetool.controller
 		public function closeImageBrowser(event:Event):void 
 		{
 			_relay.dispatchEvent(new Event(Relay.CLOSE_IMAGE_BROWSER));
+		}
+				
+		public function openSoundRecorder(event:MouseEvent):void 
+		{
+			_relay.dispatchEvent(new Event(Relay.NEW_SOUND_RECORDER));
+		}
+		
+		public function closeSoundRecorder(event:Event):void 
+		{
+			_relay.dispatchEvent(new Event(Relay.CLOSE_SOUND_RECORDER));
 		}
 
 		public function openThumbLibrary(event:MouseEvent):void

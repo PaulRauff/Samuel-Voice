@@ -19,20 +19,28 @@ package com.comprido.imagetool.view
 
 	 */
 
-	import flash.display.*;
-	import com.comprido.imagetool.controller.*;
-	import flash.events.*;
-	import com.comprido.imagetool.relay.Relay;
 	import com.carlcalderon.arthropod.Debug;
-	import fl.controls.NumericStepper;
-	import fl.controls.ComboBox;
+	import com.comprido.imagetool.controller.*;
+	import com.comprido.imagetool.events.LoadProgressEvent;
+	import com.comprido.imagetool.relay.Relay;
+	import com.paulrauff.utils.greyscale.*;
 	import fl.controls.ColorPicker;
+	import fl.controls.ComboBox;
+	import fl.controls.NumericStepper;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.text.TextField;
 
 	public class BaseView extends Sprite 
 	{
 		protected var _save_btn:SimpleButton;
 		protected var _c:Controller;
 		protected var _base:Sprite;
+		protected var _loader_mc:MovieClip;
+		
+		[Embed(source="..//..//..//..//..//bin//skin.swf",symbol="LoaderIconLib")]
+		private var LoaderIconSWF:Class;
+		
 		
 		public function BaseView() 
 		{
@@ -50,6 +58,7 @@ package com.comprido.imagetool.view
 		{
 			_c.relay.addEventListener(Relay.DISABLE_SAVE, disableSave);
 			_c.relay.addEventListener(Relay.ENABLE_SAVE, enableSave);
+			_c.relay.addEventListener(Relay.LOAD_PROGRESS, showLoader);
 		}
 		
 		protected function disableSave(event:Event = null):void
@@ -58,6 +67,7 @@ package com.comprido.imagetool.view
 			{
 				_save_btn.enabled = false;
 				_save_btn.alpha = 0.5;
+				Greyscale.apply(_save_btn, true);
 				_save_btn.removeEventListener(MouseEvent.CLICK, saveAndUpload);
 			}
 		}
@@ -68,7 +78,27 @@ package com.comprido.imagetool.view
 			{
 				_save_btn.enabled = true;
 				_save_btn.alpha = 1;
+				Greyscale.apply(_save_btn, false);
 				_save_btn.addEventListener(MouseEvent.CLICK, saveAndUpload);
+			}
+		}
+		
+		protected function showLoader(event:LoadProgressEvent):void 
+		{
+			if (!_loader_mc)
+			{
+				_loader_mc = new LoaderIconSWF();
+				_base.addChild(_loader_mc);
+			}
+
+			_loader_mc.visible = true;
+			_loader_mc["pct_txt"].text = event.percent;
+			_loader_mc.gotoAndStop(event.percent);
+			
+			if (event.percent >= 100)
+			{
+				_base.removeChild(_loader_mc);
+				_loader_mc = null;
 			}
 		}
 		
@@ -137,14 +167,6 @@ package com.comprido.imagetool.view
 			
 			return rcp;
 		}
-
-		public function destroy():void
-		{
-			if(_save_btn)
-				_save_btn.removeEventListener(MouseEvent.CLICK, saveAndUpload);
-			
-			_save_btn = null;
-		}
 		
 		public function get base():Sprite 
 		{
@@ -155,6 +177,16 @@ package com.comprido.imagetool.view
 		{
 			_base = value;
 		}
+
+		public function destroy():void
+		{
+			if(_save_btn)
+				_save_btn.removeEventListener(MouseEvent.CLICK, saveAndUpload);
+			
+			_save_btn = null;
+		}
+		
+
 		
 	}
 

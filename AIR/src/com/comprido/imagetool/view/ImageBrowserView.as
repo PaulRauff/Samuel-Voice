@@ -13,7 +13,7 @@ package com.comprido.imagetool.view
 	import flash.events.MouseEvent;
 	import flash.filesystem.File;
 	import flash.text.TextField;
-	import com.paulrauff.utils.*;
+	import com.paulrauff.utils.validate.*;
 	import com.carlcalderon.arthropod.Debug;
 	
 	/**
@@ -31,7 +31,7 @@ package com.comprido.imagetool.view
 		private var _directory:File;
 		private var _c:Controller;
 		
-		[Embed(source="..//..//..//..//..//bin//image_tool.swf",symbol="ImageBrowseLib")]
+		[Embed(source="..//..//..//..//..//bin//skin.swf",symbol="ImageBrowseLib")]
 		private var ImageBrowseSWF:Class;
 		
 		

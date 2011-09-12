@@ -20,7 +20,8 @@ package com.comprido.imagetool.relay
 	 * Global event switchboard
 	 */
 
-	import flash.events.EventDispatcher;
+	import flash.events.*;
+	import com.carlcalderon.arthropod.Debug;
 
 	public class Relay extends EventDispatcher
 	{
@@ -44,7 +45,73 @@ package com.comprido.imagetool.relay
 		static public const NEW_SECTION_LIBRARY:String = "NEW_SECTION_LIBRARY";
 		static public const SET_THUMB_DESCRIPTION:String = "SET_THUMB_DESCRIPTION";
 		static public const NEW_IMAGE_BROWSER:String = "NEW_IMAGE_BROWSER";
-		static public const CLOSE_IMAGE_BROWSER:String = "CLOSE_IMAGE_BROWSER";		
+		static public const CLOSE_IMAGE_BROWSER:String = "CLOSE_IMAGE_BROWSER";
+		static public const NEW_SOUND_RECORDER:String = "NEW_SOUND_RECORDER";
+		static public const CLOSE_SOUND_RECORDER:String = "CLOSE_SOUND_RECORDER";
+		static public const LOAD_PROGRESS:String = "LOAD_PROGRESS";
+		
+		
+		private var _eventList:Array;
+		
+		public function Relay()
+		{
+			_eventList = new Array();
+		}
+		
+		/**
+		 * Overridden function. Adds events to list for later cleanup.
+		 * @param	type
+		 * @param	listener
+		 * @param	useCapture
+		 * @param	priority
+		 * @param	useWeakReference Set to true by default (usually false)
+		 */
+		public override function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = true):void
+		{
+			_eventList[type] = new Array();
+			_eventList[type][0] = type;
+			_eventList[type][1] = listener;
+
+			return super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+		
+		/**
+		 * Does not get added to the list of events to clean on reset, has strong reference by default
+		 * @param	type
+		 * @param	listener
+		 * @param	useCapture
+		 * @param	priority
+		 * @param	useWeakReference
+		 */
+		public function addProtectedEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
+		{
+			return super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+		
+			
+		public override function dispatchEvent(event:Event):Boolean
+		{
+			return super.dispatchEvent(event);
+		}
+		
+			
+		public override function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		{
+			if (_eventList[type][0] === listener)
+			{
+				_eventList[type] = null;
+			}
+			
+			return super.removeEventListener(type, listener, useCapture);
+		}
+		
+		public function reset():void
+		{
+			for each(var a:Array in _eventList)
+			{
+				super.removeEventListener(a[0], a[1]);
+			}
+		}
 	}
 	
 }
