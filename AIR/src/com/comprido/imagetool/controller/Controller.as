@@ -48,18 +48,29 @@ package com.comprido.imagetool.controller
 		
 		private var _soundFilePlayer:SoundFilePlayer = new SoundFilePlayer();
 		
+		private static var _c:Controller;
+		
 		public function Controller()
 		{
-			_m = new Model();
-			_relay = _m.relay;
+			if(!Controller._c)
+			{
+				Controller._c = this;
+			
+				_m = new Model();
+				_relay = _m.relay;
+			}
+			else
+			{
+				Debug.warning("Controller is singleton");
+			}
 		}
 		
 		public function init():void
 		{
 			_m.init();
 
-			relay.addEventListener(NewSoundEvent.SOUND_DATA, onSoundDropped);
-			relay.addEventListener(SystemMessageEvent.MESSAGE, SystemMessageEventReceived);
+			relay.addProtectedEventListener(NewSoundEvent.SOUND_DATA, onSoundDropped);
+			relay.addProtectedEventListener(SystemMessageEvent.MESSAGE, SystemMessageEventReceived);
 		}
 		
 		public function initDragAndDrop():void
@@ -507,6 +518,8 @@ package com.comprido.imagetool.controller
 		
 		private function imageLoadCompleteHandler(event:AssetLoadedEvent):void 
 		{
+			Debug.log("ect::"+event.currentTarget);
+			
 			_m.removeEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
 
 			if (event.fileData is Bitmap) 
@@ -535,6 +548,8 @@ package com.comprido.imagetool.controller
 		
 		private function onSoundDropped(event:NewSoundEvent):void
 		{
+			Debug.log("SOUND OFF!");
+			
 			if (event.soundFile)
 			{
 				newTempThumb();
@@ -685,6 +700,7 @@ package com.comprido.imagetool.controller
 
 		public function resetCurrentSectionThumbList(event:MouseEvent):void
 		{
+			tempThumb = null;
 			_m.hasSaved = true;
 			_m.resetCurrentSectionThumbList();			
 		}

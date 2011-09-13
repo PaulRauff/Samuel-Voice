@@ -25,7 +25,7 @@
 	 
 	public class NewBitmapDataEvent extends Event 
 	{
-		public static const BITMAP_DATA:String = "bmData";
+		public static const BITMAP_DATA:String = "BITMAP_DATA";
 		public var bm:Bitmap;
 		
 		public function NewBitmapDataEvent(bm:Bitmap, type:String, bubbles:Boolean=false, cancelable:Boolean=false) 

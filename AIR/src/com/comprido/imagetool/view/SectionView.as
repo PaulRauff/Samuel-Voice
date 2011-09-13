@@ -46,6 +46,7 @@ package com.comprido.imagetool.view
 		private var _new_page_btn:SimpleButton;
 		private var _close_btn:SimpleButton;
 		private var _play_mp3_btn:SimpleButton;
+		private var _record_btn:SimpleButton;
 		private var _add_btn:SimpleButton;
 		private var _page_left_btn:SimpleButton;
 		private var _page_right_btn:SimpleButton;
@@ -103,6 +104,7 @@ package com.comprido.imagetool.view
 			_new_page_btn = SimpleButton(Validate.element(super.base["new_page_btn"], "new_page_btn missing"));
 			_close_btn = SimpleButton(Validate.element(super.base["close_btn"], "close_btn missing"));
 			_play_mp3_btn = SimpleButton(Validate.element(super.base["play_mp3_btn"], "play_mp3_btn missing"));
+			_record_btn = SimpleButton(Validate.element(super.base["record_btn"], "record_btn missing"));
 			_add_btn = SimpleButton(Validate.element(super.base["add_btn"], "add_btn missing"));
 			_page_left_btn = SimpleButton(Validate.element(super.base["page_left_btn"], "page_left_btn missing"));
 			_page_right_btn = SimpleButton(Validate.element(super.base["page_right_btn"], "page_right_btn missing"));
@@ -135,6 +137,7 @@ package com.comprido.imagetool.view
 			_lightbox_txt.text = "working...";
 
 			_play_mp3_btn.visible = false;
+			_record_btn.visible = false;
 			_mp3_btn.visible = !_play_mp3_btn.visible;
 			_add_btn.visible = false;
 
@@ -230,8 +233,10 @@ package com.comprido.imagetool.view
 			_open_folder_btn.addEventListener(MouseEvent.CLICK, _c.openThumbLibrary);
 			_open_shortcut_btn.addEventListener(MouseEvent.CLICK, _c.openShortcutLibrary);
 			
+			_imageHolder.addEventListener(MouseEvent.CLICK, _c.openImageBrowser);
 			_image_load_btn.addEventListener(MouseEvent.CLICK, _c.openImageBrowser);
 			_mp3_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);
+			_record_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);
 			
 			_page_right_btn.addEventListener(MouseEvent.CLICK, _c.pageRight);
 			_page_left_btn.addEventListener(MouseEvent.CLICK, _c.pageLeft);
@@ -250,8 +255,7 @@ package com.comprido.imagetool.view
 			_tilelist.addEventListener(MouseEvent.MOUSE_UP, _c.onTileListMouseUp);
 			_tilelist.addEventListener(MouseEvent.MIDDLE_CLICK, _c.onTileListMiddleClick);
 			_tilelist.addEventListener(MouseEvent.RIGHT_CLICK, _c.onTileListRightClick);
-			
-			
+
 			addEventListener(MouseEvent.MOUSE_OVER, numericStepperRefresh);
 
 			_c.relay.addEventListener(Relay.NEW_SECTION_LIBRARY, createSectionLibrary);
@@ -375,6 +379,7 @@ package com.comprido.imagetool.view
 		private function changeMP3ButtonVisibility(event:SetMP3ButtonVisibiltyEvent):void
 		{			
 			_play_mp3_btn.visible = event.isVisible;
+			_record_btn.visible = event.isVisible;
 			_mp3_btn.visible = !_play_mp3_btn.visible;	
 		}
 		
@@ -504,6 +509,9 @@ package com.comprido.imagetool.view
 
 		private function onImageDropped(event:NewBitmapDataEvent):void
 		{
+			Debug.log("onImageDropped 1 >>> "+event.bm);
+			Debug.log("onImageDropped 2 >>> " + _image_load_btn.width);
+			
 			var rat:Number = _c.getScaleRatio(event.bm, _image_load_btn.width);
 
 			event.bm.width = (event.bm.width * rat) - 2;
@@ -699,6 +707,8 @@ package com.comprido.imagetool.view
 			_image_load_btn.removeEventListener(MouseEvent.CLICK, _c.openImageBrowser);
 
 			_c.relay.reset();
+			//reset doesn't clear this event properly. weird...
+			_c.relay.removeEventListener(NewBitmapDataEvent.BITMAP_DATA, onImageDropped);
 			
 			if (_tilelist)
 			{

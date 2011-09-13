@@ -84,6 +84,7 @@ package com.comprido.imagetool.view
 
 			_close_btn.addEventListener(MouseEvent.CLICK, _c.closeSoundRecorder);
 			_play_btn.addEventListener(MouseEvent.CLICK, _recordController.playSound);
+			_ok_btn.addEventListener(MouseEvent.CLICK, _recordController.addSoundToMain);
 		}
 		
 		private function onRecordingStarted(event:Event):void 

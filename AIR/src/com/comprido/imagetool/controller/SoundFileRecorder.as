@@ -2,8 +2,7 @@ package com.comprido.imagetool.controller
 {
 	import com.adobe.audio.format.WAVWriter;
 	import com.carlcalderon.arthropod.Debug;
-	import com.comprido.imagetool.events.LoadProgressEvent;
-	import com.comprido.imagetool.events.RecordingTimerEvent;
+	import com.comprido.imagetool.events.*;
 	import com.comprido.imagetool.relay.Relay;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -40,7 +39,7 @@ package com.comprido.imagetool.controller
 		private var _mp3Encoder:ShineMP3Encoder;
 
 		private var _c:Controller;
-		private var _soundURL:String = "";
+		private var _soundFile:File;
 
 		public function SoundFileRecorder(c:Controller) 
 		{
@@ -65,9 +64,19 @@ package com.comprido.imagetool.controller
 		
 		private function startTimer():void
 		{
+			stopTimer();
 			_timer = new Timer(1000/FPS, 1);
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE, onTimerComplete);
 			_timer.start();			
+		}
+		
+		private function stopTimer():void
+		{
+			if (_timer)
+			{
+				_timer.stop();
+				_timer.reset();	
+			}
 		}
 		
 		private function onTimerComplete(event:TimerEvent):void 
@@ -84,13 +93,12 @@ package com.comprido.imagetool.controller
 		{
 			_isRecording = false;
 			_microphone.removeEventListener(SampleDataEvent.SAMPLE_DATA, onMicrophoneData);
-			
-			if (_soundBytes.length > 0)
+
+			if (_soundBytes.length > 99999)
 			{
 				dispatchEvent(new Event(HAS_SOUND_DATA));
+				saveFile();
 			}
-			
-			saveFile();
 		}
 		
 		private function onMicrophoneData(event:SampleDataEvent):void
@@ -152,14 +160,20 @@ package com.comprido.imagetool.controller
 			stream.writeBytes(sba);
 			stream.close();
 
-			_soundURL = cacheFile.url;
+			_soundFile = cacheFile;
+		}
+		
+		public function addSoundToMain(event:MouseEvent):void
+		{
+			_c.relay.dispatchEvent(new NewSoundEvent(_soundFile, NewSoundEvent.SOUND_DATA));
+			_c.closeSoundRecorder(event);
 		}
 		
 		public function playSound(event:MouseEvent):void
 		{
 			if (_soundPlayer)
 			{
-				_soundPlayer.playSoundFile(_soundURL);
+				_soundPlayer.playSoundFile(_soundFile.url);
 				_soundPlayer.addEventListener(SoundFilePlayer.SOUND_PLAY_COMPLETE, onSoundComplete);
 				
 				_timerCount = 0;
@@ -169,12 +183,13 @@ package com.comprido.imagetool.controller
 		
 		private function onSoundComplete(event:Event):void 
 		{
-			_timer.stop();
-			_timer.reset();
+			stopTimer();
 		}
 		
 		private function startPlaybackTimer():void
 		{
+			stopTimer();
+			
 			_timer = new Timer(1000/FPS, 1);
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE, onPlaybackTimerComplete);
 			_timer.start();	
