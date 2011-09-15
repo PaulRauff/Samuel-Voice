@@ -35,6 +35,10 @@ package com.comprido.imagetool.view
 	{
 		private var _c:Controller;
 		private var _currentSection:BaseView;
+		private var _loader_mc:MovieClip;
+		
+		[Embed(source="..//..//..//..//..//bin//skin.swf",symbol="LoaderIconLib")]
+		private var LoaderIconSWF:Class;
 
 		public function View()
 		{
@@ -46,6 +50,7 @@ package com.comprido.imagetool.view
 		private function init():void
 		{
 			_c.relay.addProtectedEventListener(CreateSectionEvent.NEW_SECTION, createNewSection);
+			_c.relay.addEventListener(Relay.LOAD_PROGRESS, showLoader);
 			_c.init();
 		}
 		
@@ -70,6 +75,26 @@ package com.comprido.imagetool.view
 			}
 			
 			Main.getInstance().addChild(_currentSection);
+		}
+		
+		protected function showLoader(event:LoadProgressEvent):void 
+		{
+			Debug.log("LOADER "+_loader_mc);
+			if (!_loader_mc)
+			{
+				_loader_mc = new LoaderIconSWF();
+				Main.getInstance().addChild(_loader_mc);
+			}
+
+			_loader_mc.visible = true;
+			_loader_mc["pct_txt"].text = event.percent;
+			_loader_mc.gotoAndStop(event.percent);
+			
+			if (event.percent >= 100)
+			{
+				Main.getInstance().removeChild(_loader_mc);
+				_loader_mc = null;
+			}
 		}
 	}
 }

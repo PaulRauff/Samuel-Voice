@@ -38,6 +38,8 @@ package com.comprido.imagetool.controller
 		
 		public function playSoundFile(url:String):void
 		{
+			Debug.log(url);
+			
 			var req:URLRequest = new URLRequest(url);
 			
 			var sound:Sound = new Sound();  

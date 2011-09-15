@@ -62,7 +62,7 @@ package com.comprido.imagetool.view
 		}
 		
 		protected function disableSave(event:Event = null):void
-		{			
+		{
 			if (_save_btn)
 			{
 				_save_btn.enabled = false;

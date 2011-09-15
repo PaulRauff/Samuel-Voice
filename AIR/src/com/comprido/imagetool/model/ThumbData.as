@@ -45,15 +45,36 @@ package com.comprido.imagetool.model
 			_id = id;
 		}
 		
-		public function clone(id:Number):ThumbData
+		public function clone(newID:Number):ThumbData
 		{
-			var td:ThumbData = new ThumbData(id);
+			var td:ThumbData = new ThumbData(newID);
 
 			td.description = description;
-			td.onServer = onServer;
+			td.onServer = false;
 			td.bitmap = bitmap;
-			td.soundFileLocaton = soundFileLocaton;
-			td.soundFile = soundFile;
+			
+			var destination:File = File.applicationStorageDirectory.resolvePath("cachedimages/" + newID + ".mp3");
+
+			if (id != newID)
+			{
+				var source:File = File.applicationStorageDirectory.resolvePath("cachedimages/"+id+".mp3");
+
+				if (source.exists)
+				{
+					try 
+					{
+						source.copyTo(destination, true);
+					}
+					catch (error:Error)
+					{
+						Debug.error("ThumbData.clone :: "+error.message+" :: copying "+source.url +" to "+destination.url);
+					}
+				}
+			}
+			
+			td.soundFileLocaton = destination.url;			
+			td.soundFile = destination;
+			
 			td.page = page;
 			td.isShortcut = isShortcut;
 			td.isCommon = isCommon;
@@ -86,7 +107,7 @@ package com.comprido.imagetool.model
 			if (!_soundFile)
 			{
 				var cacheFile:File = getCacheFile("cachedimages/", ".mp3");
-				
+
 				if (cacheFile.exists)
 				{
 					_soundFile = cacheFile;

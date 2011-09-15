@@ -289,6 +289,7 @@ package com.comprido.imagetool.view
 
 		private function setDescription(event:SetThumbDescriptionEvent):void 
 		{
+			_c.setDescription(null, event.description);
 			_description_txt.text = event.description;
 		}
 		
@@ -443,6 +444,7 @@ package com.comprido.imagetool.view
 			_description_txt.text = _descriptionDefaultText;
 
 			_play_mp3_btn.visible = false;
+			_record_btn.visible = false;
 			_mp3_btn.visible = !_play_mp3_btn.visible;
 
 			_image_load_btn.visible = true;

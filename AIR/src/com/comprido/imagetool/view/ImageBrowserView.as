@@ -120,7 +120,9 @@ package com.comprido.imagetool.view
 			
 			_tilelist.removeAll();
 			
-			for(var ii:int = 0; ii < files.length; ii++)
+			var len:int = files.length;
+			
+			for(var ii:int = 0; ii < len; ii++)
 			{
 				if (files[ii].extension && (files[ii].extension.toLowerCase() == "jpg" || files[ii].extension.toLowerCase() == "gif" || files[ii].extension.toLowerCase() == "png"))
 				{

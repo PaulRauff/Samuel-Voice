@@ -126,6 +126,8 @@ package com.comprido.imagetool.controller
 		//view events		
 		public function onPlaySoundClicked(event:MouseEvent):void
 		{
+			Debug.log("PLAY SOUND "+tempThumb.soundFile);
+			
 			if(tempThumb.soundFile)
 			{
 				playSound(tempThumb.id);
@@ -461,10 +463,21 @@ package com.comprido.imagetool.controller
 			_m.hasSaved = false;
 		}
 		
-		public function setDescription(event:Event = null):void
+		public function setDescription(event:Event = null, text:String = null):void
 		{
+			var t:String = "";
+
+			if (event != null)
+			{
+				t = event.target.text;
+			}
+			else if (text != null)
+			{
+				t = text;
+			}
+			
 			newTempThumb();
-			tempThumb.description = event.target.text;
+			tempThumb.description = t;
 			checkAddVisiblity();
 			_m.hasSaved = false;
 		}
@@ -518,8 +531,6 @@ package com.comprido.imagetool.controller
 		
 		private function imageLoadCompleteHandler(event:AssetLoadedEvent):void 
 		{
-			Debug.log("ect::"+event.currentTarget);
-			
 			_m.removeEventListener(AssetLoadedEvent.FILE_DATA, imageLoadCompleteHandler);
 
 			if (event.fileData is Bitmap) 

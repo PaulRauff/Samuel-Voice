@@ -64,37 +64,37 @@ package com.paulrauff.utils.fileloader
 
 		private function httpStatusHandler(event:HTTPStatusEvent):void 
 		{
-			Debug.log("DataLoader.httpStatusHandler: " + event);
+			//Debug.log("DataLoader.httpStatusHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function initHandler(event:Event):void 
 		{
-			Debug.log("DataLoader.initHandler: " + event);
+			//Debug.log("DataLoader.initHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function ioErrorHandler(event:IOErrorEvent):void 
 		{
-			Debug.error("DataLoader.ioErrorHandler: \n" + event);
+			//Debug.error("DataLoader.ioErrorHandler: \n" + event);
 			dispatchEvent(event);
 		}
 
 		private function openHandler(event:Event):void 
 		{
-			Debug.log("DataLoader.openHandler: " + event);
+			//Debug.log("DataLoader.openHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function progressHandler(event:ProgressEvent):void 
 		{
-			Debug.log("DataLoader.progressHandler: bytesLoaded=" + event.bytesLoaded + " bytesTotal=" + event.bytesTotal);
+			//Debug.log("DataLoader.progressHandler: bytesLoaded=" + event.bytesLoaded + " bytesTotal=" + event.bytesTotal);
 			this.dispatchEvent(event);
 		}
 
 		private function unLoadHandler(event:Event):void 
 		{
-			Debug.log("DataLoader.unLoadHandler: " + event);
+			//Debug.log("DataLoader.unLoadHandler: " + event);
 			this.dispatchEvent(event);
 		}
 	}

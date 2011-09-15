@@ -69,11 +69,11 @@ package com.comprido.imagetool.model
 
 			var xmlLoader:DataLoader = new DataLoader();
 			xmlLoader.addEventListener(DataLoadedEvent.FILE_DATA, onXMLLoaded);
-			xmlLoader.addEventListener(IOErrorEvent.IO_ERROR, onXMLLoadFail);
+			xmlLoader.addEventListener(IOErrorEvent.IO_ERROR, loadCurrentSection);
 			xmlLoader.load(serverLocation+"1/"+xmlFile);
 		}
 		
-		private function onXMLLoadFail(event:IOErrorEvent):void 
+		private function loadCurrentSection(event:Event):void 
 		{
 			_relay.dispatchEvent(new CreateSectionEvent(_currentSection, currentPage, Relay.NEW_SECTION));
 		}
@@ -83,7 +83,10 @@ package com.comprido.imagetool.model
 			//read xml and add to thumb list. test for local files
 			parseXML(XML(event.dataObject));
 			
-			_relay.dispatchEvent(new CreateSectionEvent(_currentSection, currentPage, Relay.NEW_SECTION));
+			//_relay.dispatchEvent(new CreateSectionEvent(_currentSection, currentPage, Relay.NEW_SECTION));
+			
+			var adl:AssetDownloader = new AssetDownloader(_thumbList, serverLocation, _relay);
+			adl.addEventListener(AssetDownloader.READY, loadCurrentSection);
 		}
 		
 		private function parseXML(xml:XML):void 
@@ -313,15 +316,19 @@ package com.comprido.imagetool.model
 				default:
 					return "";
 			}
+			
 			var imageDir:File = File.applicationStorageDirectory.resolvePath("cachedimages/");
 			var cacheFile:File = new File(imageDir.nativePath +File.separator+ ""+id+ext);
             
-			//cache should exist, since this is the creator tool...
+			//cache should exist, because of sync...
 			if (cacheFile.exists)
 			{
                 rtn = cacheFile.url;
             }
-			//else will stream off the server directly when needed
+			else
+			{
+				Debug.warning("FILE DOES NOT EXIST :: "+cacheFile.url);
+			}
 			
 			return rtn;
 		}

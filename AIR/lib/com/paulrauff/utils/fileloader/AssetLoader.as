@@ -57,44 +57,44 @@ package com.paulrauff.utils.fileloader
 
 		private function completeHandler(event:Event):void 
 		{
-			Debug.log("ImageLoader.completeHandler::"+event.target.content);
+			//Debug.log("ImageLoader.completeHandler::"+event.target.content);
 			
 			this.dispatchEvent(new AssetLoadedEvent(event.target.content, AssetLoadedEvent.FILE_DATA));
 		}
 
 		private function httpStatusHandler(event:HTTPStatusEvent):void 
 		{
-			Debug.log("ImageLoader.httpStatusHandler: " + event);
+			//Debug.log("ImageLoader.httpStatusHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function initHandler(event:Event):void 
 		{
-			Debug.log("ImageLoader.initHandler: " + event);
+			//Debug.log("ImageLoader.initHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function ioErrorHandler(event:IOErrorEvent):void 
 		{
-			Debug.error("ImageLoader.ioErrorHandler: " + event);
+			//Debug.error("ImageLoader.ioErrorHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function openHandler(event:Event):void 
 		{
-			Debug.log("ImageLoader.openHandler: " + event);
+			//Debug.log("ImageLoader.openHandler: " + event);
 			this.dispatchEvent(event);
 		}
 
 		private function progressHandler(event:ProgressEvent):void 
 		{
-			Debug.log("ImageLoader.progressHandler: bytesLoaded=" + event.bytesLoaded + " bytesTotal=" + event.bytesTotal);
+			//Debug.log("ImageLoader.progressHandler: bytesLoaded=" + event.bytesLoaded + " bytesTotal=" + event.bytesTotal);
 			this.dispatchEvent(event);
 		}
 
 		private function unLoadHandler(event:Event):void 
 		{
-			Debug.log("ImageLoader.unLoadHandler: " + event);
+			//Debug.log("ImageLoader.unLoadHandler: " + event);
 			this.dispatchEvent(event);
 		}
 	}
