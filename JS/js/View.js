@@ -24,6 +24,7 @@ SVMain.View = function(){
 	var _audio;
 	var _isTouch = false;
 	var _moveX = 0;
+	var _timeout;
 
 	SVMain.View.THUMB_INDEX_CLICKED = "THUMB_INDEX_CLICKED";
 	SVMain.View.THUMB_CLICKED = "THUMB_CLICKED";
@@ -41,11 +42,10 @@ SVMain.View = function(){
 	}
 	
 	function init(){
-		//console.log(screen.height);
-		
 		_evt = this.evt;
 		_isTouch = isTouch();
 		_audio = document.createElement('audio');
+		_audio.preload = "auto";
 		
 		$("#menu_holder").click(function () {
 			_evt.fire(SVMain.View.MENU_CLICKED);
@@ -67,12 +67,8 @@ SVMain.View = function(){
 	
 	function evtHandler(event, thumbID)
 	{
-		event.preventDefault();
-		event.stopPropagation();
-		event.cancelBubble = true;
-		event.returnValue = false;
-		
 		//console.log(event.type);
+		defaultBlocker (event);
 		
 		switch(event.type)
 		{
@@ -99,6 +95,13 @@ SVMain.View = function(){
 		return false;
 	}
 	
+	function defaultBlocker (event) {
+		event.preventDefault();
+		event.stopPropagation();
+		event.cancelBubble = true;
+		event.returnValue = false;
+	}
+	
 	function setMenu(isDown){
 		if(isDown){
 			$("#index_holder").slideDown('medium');
@@ -108,15 +111,43 @@ SVMain.View = function(){
 		}
 	}
 	
+	function getAudioHtml(index, id){
+		return "<audio id='s_"+index+"_"+id+"' src='1/sound/"+id+".mp3' preload='auto' loop='false' />";
+	}
+	
+	function addAudio(html){		
+		$("body").append(html);		
+	}
+	
 	function setBGColour(clr){
 		$("body").css("background-color", clr);
 	}
 	
 	function setPageData(currentPage, totalPages){
-		var pd = "<a href='#'>page "+currentPage+" of "+totalPages+"</a>";
+		if(totalPages > 1){
+			var pd = "<a href='#'>page "+currentPage+" of "+totalPages+"</a>";
+			$("#page_data").html(pd);
+			$("#page_data").click(function(e){_evt.fire(SVMain.View.PAGE_UP); return false;});
+		}
 		
-		$("#page_data").html(pd);
-		$("#page_data").click(function(e){_evt.fire(SVMain.View.PAGE_UP); return false;});
+		//if on page 1 and more pages, show right arrow
+		if(currentPage === 1 && totalPages > 1){
+			$("body").css("background-image", "url(img/arrow_right.png)");
+			$("body").css("background-position", "right center");
+		}//if on last page and more than 1 pages, show left arrow
+		else if(currentPage === totalPages && totalPages > 1){
+			$("body").css("background-image", "url(img/arrow_left.png)");
+			$("body").css("background-position", "left center");
+		}//if on any page other than first, show both arrows (prev if supercedes)
+		else if(currentPage > 1){
+			$("body").css("background-image", "url(img/arrow_left.png), url(img/arrow_right.png)");
+			$("body").css("background-position", "left center, right center");
+		}
+		else{
+			$("body").css("background-image", "");
+			$("body").css("background-position", "");
+		}
+		
 	}
 	
 	function setCurrentSectionName(name){
@@ -149,7 +180,7 @@ SVMain.View = function(){
 	}
 	
 	function setThumbEvent(index, thumbID){
-		var cssID = index+"_"+thumbID;
+		var cssID = "t_"+index+"_"+thumbID;
 
 		if(_isTouch){
 			document.getElementById(cssID).ontouchstart = function(e){return evtHandler(e, thumbID);};
@@ -174,41 +205,53 @@ SVMain.View = function(){
 			$("#"+cssID).unbind('click');
 		}
 	}
-	
-	function initSound(tid){
-		console.log("initSound");
-		_audio.pause();
-		_audio.position = 0;
-		_audio.src = "1/sound/"+tid+".mp3";
-		_audio.load();
-	}
 
 	function playSound(tid){
 		_audio.pause();
+		_audio.src = "1/sound/"+tid+".mp3";
 		_audio.position = 0;
+		
+		 _audio.addEventListener('loadedmetadata', loadedAudioMetadata, false);
+		  _audio.addEventListener('ended', hideLightBox, false); 
+
 		_audio.play();
-		console.log(_audio.src);
 	}
 	
+	function loadedAudioMetadata(){
+		document.getElementById("light_box").ontouchstart = function(e){return defaultBlocker(e);};
+		
+		$('#light_box').addClass("light_box");
+		
+		_timeout = setTimeout(hideLightBox, 5000);
+	}
+	
+	
+	function hideLightBox(){
+		clearTimeout(_timeout);
+		_timeout = null;
+		$('#light_box').removeClass("light_box");
+	}
+
 	function moveThumbs(thumbX){
 		$("#thumb_holder").css("left", thumbX);
 	}
-	
-	function setThumbSpinner(html, animTime){
-		$(".spinner_animation").remove();
-		$("#thumb_spinner").before(html);
-		$(".spinner_animation").css("-webkit-animation-duration", animTime+"s");
-	}
-	
+
 	function scrollVertical(scrollY){
 		var top = $("#thumb_holder").scrollTop();
 		$("#thumb_holder").scrollTop(top + scrollY);
 	}
 	
-	function getCellHTML(index, id, thumbsize, fontsize, txt){
+	function getCellHTML(index, id, thumbsize, fontsize, txt, hasAudio){
 		var titleBoxHeight = Number(fontsize) + 6;
 		
-		var thumbHTML = "<div class='thumb' id='"+index+"_"+id+"' style='width:"+thumbsize+"px; height:"+thumbsize+"px'>";
+		var idPrefix = "i_";
+		
+		if(hasAudio){
+			idPrefix = "t_";
+		}
+		
+		var thumbHTML = "<div class='thumb' id='"+idPrefix+index+"_"+id+"' style='width:"+thumbsize+"px; height:"+thumbsize+"px'>";
+
 		thumbHTML += "<img src='1/img/"+id+".jpg' class='thumb_image' />";
 		
 		if(txt)
@@ -229,29 +272,25 @@ SVMain.View = function(){
 		$("#page_data").unbind('click');
 		$("#page_data").html("");
 		
-		var len = _audio.length;
-		
-		for(ii = 0; ii < len; ii++){
-			_audio[ii] = null;
-		}
+		//_audio = null;
 	}
 
 	return{
 		init:init,
+		getAudioHtml:getAudioHtml,
+		addAudio:addAudio,
 		addIndex:addIndex,
 		addThumbs:addThumbs,
 		setThumbEvent:setThumbEvent,
 		removeThumbEvent:removeThumbEvent,
 		setIndexThumbEvent:setIndexThumbEvent,
 		setMenu:setMenu,
-		initSound:initSound,
 		playSound:playSound,
 		setBGColour:setBGColour,
 		setPageData:setPageData,
 		setCurrentSectionName:setCurrentSectionName,
 		getCellHTML:getCellHTML,
 		moveThumbs:moveThumbs,
-		setThumbSpinner:setThumbSpinner,
 		scrollVertical:scrollVertical,
 		destroy:destroy,
 		onError:onError,

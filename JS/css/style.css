@@ -3,6 +3,8 @@ body {
 	margin:0;
 	text-align:center;
 	font-family: Arial,sans-serif,Tahoma;
+
+	background-repeat: no-repeat;
 }
 
 a{
@@ -99,15 +101,11 @@ a{
 
 #thumb_holder {
 	position: relative;
-	top: 75px;
+	top: 65px;
 	display: block;
 	width: 920px;
-	height: 675px;
+	height: 685px;
 	overflow: auto;
-}
-
-#thumb_spinner{
-	z-index: 30;
 }
 
 .thumb {
@@ -116,6 +114,12 @@ a{
 	margin: 0;
 	text-align: center;
 }
+
+.thumb:active {
+	opacity:0.4;
+}
+
+
 .thumb_image {
 	position: relative;
 	width: 100%;
@@ -135,28 +139,10 @@ a{
 	font-weight:bold;
 }
 
-.spinner_animation{
+.light_box{
 	position:absolute;
-	width: 16px;
-	height: 16px;
-	background: #f00;
-	opacity: 0;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-	border-radius: 8px;
-	
-	-webkit-animation-name: FadeIn; 
-	-webkit-animation-timing-function: ease-in; 
-	
-	-webkit-animation-iteration-count: 1;
-	-webkit-animation-fill-mode: forwards;
-	
-	z-index: 40;
-}
-
-@-webkit-keyframes FadeIn { 				
-	0% { opacity: 1; } 
-	10% { opacity: 0.8; } 
-	80% { opacity: 0.8; } 
-	100% { opacity: 0; } 
+	width:100%;
+	height:100%;
+	background-color: rgba(0,0,0,0.4);
+	z-index: 999;
 }

@@ -25,8 +25,6 @@ SVMain.Controller = function(){
 	var _startMoveY = 0;
 	var _moveX = 0;
 	var _moveY = 0;
-	var _startTouchTime = 0;
-	var _isSpinning = false;
 	
 	_Controller();
 	function _Controller(){
@@ -41,7 +39,6 @@ SVMain.Controller = function(){
 		_v.evt.addListener(SVMain.View.THUMB_TOUCH_MOVE, onThumbTouchMove);
 		_v.evt.addListener(SVMain.View.THUMB_TOUCH_END, onThumbTouchEnd);
 		_v.evt.addListener(SVMain.View.PAGE_UP, pageUp);
-		
 
 		_m = new SVMain.Model();	
 			
@@ -56,13 +53,26 @@ SVMain.Controller = function(){
 	function onXMLReady(args){
 		//console.log("onXMLReady ");
 
-		//loop through the thumbdata and generate the html		
+		//loop through the thumbdata and generate the html
+		setAudio();		
 		setSections();
 		setThumbs();
 	}
 	
 	function onSectionReady(args){
 		setThumbs();		
+	}
+	
+	function setAudio(){
+		var ta = _m.getAllThumbIDs();
+		var len = ta.length;
+		var h = "";
+		
+		for (var ii = 0; ii < len; ii++){
+			h += _v.getAudioHtml(ii, ta[ii]);
+		}
+		
+		_v.addAudio(h);
 	}
 	
 	function setSections(){
@@ -72,7 +82,7 @@ SVMain.Controller = function(){
 		var ii = 0;
 		
 		for(ii = 0; ii < len; ii++){
-			thumbHTML += _v.getCellHTML("i_" + ii, sectionList[ii].id(), _m.getIndexThumbSize(), _m.getIndexFontSize(), sectionList[ii].name());
+			thumbHTML += _v.getCellHTML(ii, sectionList[ii].id(), _m.getIndexThumbSize(), _m.getIndexFontSize(), sectionList[ii].name(), false);
 		}
 		
 		_v.addIndex(thumbHTML);
@@ -91,7 +101,7 @@ SVMain.Controller = function(){
 		var fontsize = _m.getCurrentFontSize();
 				
 		for(ii = 0; ii < len; ii++){			
-			thumbHTML += _v.getCellHTML("t_" + ii, thumbIDList[ii], thumbsize, fontsize, _m.getThumbDescription(thumbIDList[ii]));
+			thumbHTML += _v.getCellHTML(ii, thumbIDList[ii], thumbsize, fontsize, _m.getThumbDescription(thumbIDList[ii]), true);
 		}
 
 		_v.addThumbs(thumbHTML);
@@ -101,7 +111,7 @@ SVMain.Controller = function(){
 		thumbReset();
 		
 		for(ii = 0; ii < len; ii++){
-			_v.setThumbEvent("t_"+ii, thumbIDList[ii]);
+			_v.setThumbEvent(ii, thumbIDList[ii]);
 		}
 		
 		setPageData();
@@ -115,50 +125,6 @@ SVMain.Controller = function(){
 
 		loadPage(p);
 	}
-	
-	function startSpinner(thumbID, fingerX, fingerY){
-		var spinTime = (_m.getTouchTime()/1000);
-		
-		if(spinTime >= 1)
-			spinTime += 0.3;
-		
-		var dotCount = 15;
-		var angIncr = Math.PI*2/ dotCount;
-		var delayIncr = spinTime/dotCount;
-		var currAng = Math.PI*1.5;
-		var delay = 0;		
-		var radius = 80;
-		var html = "";
-		
-		while(currAng < Math.PI*3.5){
-			var xpt = (radius * Math.cos(currAng)) + fingerX;
-			var ypt = (radius * Math.sin(currAng)) + fingerY - 30;
-			
-			if(ypt < 0){
-				ypt = 0;
-			}
-			
-			if(xpt < 0){
-				xpt = 0;
-			}
-			
-			delay += delayIncr;
-						
-			html += "<div class='spinner_animation' style='left:"+xpt+"px; top:"+ypt+"px; -webkit-animation-delay: "+delay+"s;'></div>";
-			
-			currAng += angIncr;
-		}
-		
-		_v.setThumbSpinner(html, delay/2);
-		_isSpinning = true;
-	}
-	
-	function stopSpinner(){
-		if(_isSpinning){
-			_v.setThumbSpinner("");
-			_isSpinning = false;
-		}
-	}
 
 	function thumbReset(){
 		var thumbIDList = _m.getCurrentThumbIDs();
@@ -170,65 +136,54 @@ SVMain.Controller = function(){
 	}
 
 	function onThumbTouchStart(args){
-		
 		if(args.length === 4){
-			//_touchTimer = setTimeout(function() { ps(args[1]); }, 500);
-			
-			_v.initSound(args[1]);
-			
 			_startMoveX = _moveX = args[2];
-			_startMoveY = args[3];
-			_startTouchTime = new Date().getTime();
-
-			if(args[1] && !_m.getThumbShortcut(args[1])){
-				startSpinner(args[1], args[2], args[3]);
-			}
+			_startMoveY = _moveY = args[3];
 		}
 	}
 
 	function onThumbTouchMove(args){
 
-		_moveX = args[2];
 		var mv = _startMoveX - _moveX;
 		var cp = _m.getCurrentPage() +1;
+		
+		_moveX = args[2];
+		_moveY = args[3];
 	
 		if((mv > 0 && cp < _m.getCurrentSectionPageTotal()) 
 		|| (mv < 0 && cp > 1)){
-			if(mv < -500){
+			if(mv < -400){
 				//page right
 				loadPage(_m.getCurrentPage() - 1);
-			}else if(mv > 500){
+			}else if(mv > 400){
 				//page left
 				loadPage(_m.getCurrentPage() + 1);
-			}else{
+			}else if(Math.abs(mv) > 20){
 				_v.moveThumbs(-mv);
 			}
 		}
-		
-		if(Math.abs(mv) > 20){
-			stopSpinner();
-		}
-		
+
 		_v.scrollVertical(_startMoveY - args[3]);
 	}
 
 	function onThumbTouchEnd(args){
 
-		var mv = Math.abs(_startMoveX - _moveX);
+		var mvx = Math.abs(_startMoveX - _moveX);
+		var mvy = Math.abs(_startMoveY - _moveY);
 		
-		if(mv < 500){
-			_v.moveThumbs(0);
-						
-			if(args[1] && mv < 50 && args.length >= 1){
-				onThumbClicked(args);
-			}
+		console.log(mvy);
+		
+		if(mvy < 30 && mvx < 30){
+			onThumbClicked(args);
 		}
-		
-		_startTouchTime = 0;
+			
+		if(mvx < 400){
+			_v.moveThumbs(0);
+		}
+
 		_moveX = 0;
 		_startMoveX = 0;
-		
-		stopSpinner();
+		_startTouchID = 0;
 	}
 	
 	function onMenuClicked(args){
@@ -258,9 +213,7 @@ SVMain.Controller = function(){
 			loadSection(tid);
 		}
 		else{			
-			if((_startTouchTime + _m.getTouchTime()) <= new Date().getTime()){
-				_v.playSound(tid);
-			}
+			_v.playSound(tid);
 		}
 	}
 		
@@ -276,9 +229,7 @@ SVMain.Controller = function(){
 	}
 	
 	function setPageData(){		
-		if(_m.getCurrentSectionPageTotal() > 1){
-			_v.setPageData(_m.getCurrentPage()+1, _m.getCurrentSectionPageTotal());
-		}
+		_v.setPageData(_m.getCurrentPage()+1, _m.getCurrentSectionPageTotal());
 	}
 	
 

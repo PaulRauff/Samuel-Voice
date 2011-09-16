@@ -25,6 +25,7 @@ SVMain.Model = function(){
 	var _indexThumbSize = 150;
 	var _thumbData = new Array();
 	var _sectionData = new Array();
+	var _thumbIDs = new Array();
 	var _menuDown = true;
 	var _touchTime = 300;
 	
@@ -79,6 +80,7 @@ SVMain.Model = function(){
 			if(thumbs[ii].attributes.getNamedItem("id").value){
 				tid = thumbs[ii].attributes.getNamedItem("id").value;
 				_thumbData[tid] = new SVMain.ThumbData(tid);
+				_thumbIDs.push(tid);
 			}
 			else{
 				tid = 0;
@@ -167,6 +169,10 @@ SVMain.Model = function(){
 		}
 	}
 	
+	function getAllThumbIDs() {
+	  return _thumbIDs;
+	}
+	
 	function getCurrentThumbIDs(){
 		return _sectionData[_currentSection].getThumbList(_currentPage);		
 	}
@@ -221,6 +227,10 @@ SVMain.Model = function(){
 	}
 
 	var getThumbShortcut = function(tid){
+		if(!tid){
+			return false;
+		}
+		
 		return _thumbData[tid].isShortcut();
 	}
 	
@@ -250,6 +260,7 @@ SVMain.Model = function(){
 		getSectionData:getSectionData,
 		loadSection:loadSection,
 		loadPage:loadPage,
+		getAllThumbIDs:getAllThumbIDs,
 		getCurrentThumbIDs:getCurrentThumbIDs,
 		getThumbDescription:getThumbDescription,
 		getCurrentThumbSize:getCurrentThumbSize,

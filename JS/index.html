@@ -6,12 +6,20 @@
 	<meta name="language" content="en" />
 	<meta name="description" content="" />
 	<meta name="keywords" content="" />
+	<meta name="viewport" content="user-scalable=no, width=device-height">
 	
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	
+	<link rel="apple-touch-icon" href="img/fav.png">
+	<link rel="apple-touch-startup-image" href="img/startup.png">
+
+	<link rel="icon" type="image/png" href="img/fav.png">
 	<link rel="stylesheet" href="css/style.css" type="text/css" />
 </head>
 
 <body>
-	<div id="thumb_spinner"></div>
+	<div id="light_box"></div>
 	
 	<div id="menu_data">
 		<span id='page_data'></span>
@@ -49,31 +57,6 @@
 	$(document).ready(function() {
 		_Main = new SVMain();
 	});
-	
-	/*
-
-	$.ajax({
-		type: "GET",
-		url: "b64.txt",
-		cache:false,
-		dataType:"text",
-		success: playAudioFile
-	});
-
-	
-	
-	
-	
-	function playAudioFile(data) {
-		//https://developer.mozilla.org/en/data_URIs
-		
-		var a = document.createElement('audio');
-		a.src =  "data:audio/mpeg;base64,"+data;
-		//	SVMain.src =  "data:audio/mpeg;base64,"+data;
-		a.play(); 
-	}	
-	*/
-
 </script>
 
 </html>
