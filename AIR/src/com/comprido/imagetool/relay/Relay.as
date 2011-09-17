@@ -39,7 +39,8 @@ package com.comprido.imagetool.relay
 		static public const ENABLE_SAVE:String = "ENABLE_SAVE";
 		static public const DISABLE_SAVE:String = "DISABLE_SAVE";
 		static public const CLOSE_ALERT_BOX:String = "CLOSE_ALERT_BOX";	
-		static public const OPEN_ALERT_BOX:String = "OPEN_ALERT_BOX";	
+		static public const OPEN_SAVE_ALERT_BOX:String = "OPEN_SAVE_ALERT_BOX";
+		static public const OPEN_DELETE_ALERT_BOX:String = "OPEN_DELETE_ALERT_BOX";		
 		static public const NEW_THUMB_LIBRARY:String = "NEW_THUMB_LIBRARY";	
 		static public const MOUSE_MIDDLE_CLICK_TILE:String = "MOUSE_MIDDLE_CLICK_TILE";
 		static public const NEW_SECTION_LIBRARY:String = "NEW_SECTION_LIBRARY";

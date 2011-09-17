@@ -488,6 +488,17 @@ package com.comprido.imagetool.controller
 			_m.hasSaved = false;
 		}
 		
+		public function promptDeleteCurrentSection(event:MouseEvent):void
+		{
+			_relay.dispatchEvent(new Event(Relay.OPEN_DELETE_ALERT_BOX));
+		}
+		
+		public function deleteCurrentSection(event:Event):void
+		{
+			_m.deleteCurrentSection();
+			_m.hasSaved = false;
+		}
+		
 		public function newTempThumb():void
 		{
 			if (!tempThumb)
@@ -698,7 +709,7 @@ package com.comprido.imagetool.controller
 			}
 			else
 			{
-				_relay.dispatchEvent(new Event(Relay.OPEN_ALERT_BOX));
+				_relay.dispatchEvent(new Event(Relay.OPEN_SAVE_ALERT_BOX));
 			}
 		}
 		

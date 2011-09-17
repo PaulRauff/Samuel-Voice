@@ -55,6 +55,7 @@ package com.comprido.imagetool.view
 		private var _open_shortcut_btn:SimpleButton;
 		private var _image_load_btn:SimpleButton;		
 		private var _mp3_btn:SimpleButton;
+		private var _section_delete_btn:SimpleButton;
 		
 		private var _section_thumb_holder_uil:UILoader;
 
@@ -113,6 +114,7 @@ package com.comprido.imagetool.view
 			_open_shortcut_btn = SimpleButton(Validate.element(super.base["open_shortcut_btn"], "open_shortcut_btn missing"));
 			_image_load_btn = SimpleButton(Validate.element(super.base["image_load_btn"], "image_load_btn missing"));
 			_mp3_btn = SimpleButton(Validate.element(super.base["mp3_btn"], "mp3_btn missing"));
+			_section_delete_btn = SimpleButton(Validate.element(super.base["section_delete_btn"], "section_delete_btn missing"));
 			
 			_section_thumb_holder_uil = UILoader(Validate.element(super.base["section_thumb_holder_uil"], "section_thumb_holder_uil missing"));
 		
@@ -237,6 +239,7 @@ package com.comprido.imagetool.view
 			_image_load_btn.addEventListener(MouseEvent.CLICK, _c.openImageBrowser);
 			_mp3_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);
 			_record_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);
+			_section_delete_btn.addEventListener(MouseEvent.CLICK, _c.promptDeleteCurrentSection);
 			
 			_page_right_btn.addEventListener(MouseEvent.CLICK, _c.pageRight);
 			_page_left_btn.addEventListener(MouseEvent.CLICK, _c.pageLeft);
@@ -272,7 +275,8 @@ package com.comprido.imagetool.view
 			_c.relay.addEventListener(Relay.MOUSE_MIDDLE_CLICK_TILE, onTileListMiddleClick);	
 			_c.relay.addEventListener(Relay.MOUSE_DOWN_TILE, onTileListMouseDown);
 			_c.relay.addEventListener(Relay.ADD_TILE, addThumbToPage);			
-			_c.relay.addEventListener(Relay.OPEN_ALERT_BOX, openAlertBox);
+			_c.relay.addEventListener(Relay.OPEN_SAVE_ALERT_BOX, openSaveAlertBox);
+			_c.relay.addEventListener(Relay.OPEN_DELETE_ALERT_BOX, openDeleteAlertBox);			
 			_c.relay.addEventListener(Relay.CLOSE_ALERT_BOX, closeAlertBox);
 			_c.relay.addEventListener(Relay.SET_THUMB_DESCRIPTION, setDescription);
 			_c.relay.addEventListener(Relay.NEW_IMAGE_BROWSER, openImageBrowser);
@@ -384,7 +388,7 @@ package com.comprido.imagetool.view
 			_mp3_btn.visible = !_play_mp3_btn.visible;	
 		}
 		
-		protected function openAlertBox(event:Event):void
+		protected function openSaveAlertBox(event:Event):void
 		{
 			var btnLabels:Vector.<String> = new < String > ["save and close", "close without saving", "cancel"];
 			_alertBox = new AlertBox("you haven't saved!", btnLabels);
@@ -397,6 +401,20 @@ package com.comprido.imagetool.view
 			_alertBox.addEventListener(btnLabels[0], saveAndClose, false, 0, true);
 			_alertBox.addEventListener(btnLabels[1], _c.openIndex, false, 0, true);
 			_alertBox.addEventListener(btnLabels[2], closeAlertBox, false, 0, true);
+		}
+		
+		protected function openDeleteAlertBox(event:Event):void
+		{
+			var btnLabels:Vector.<String> = new < String > ["WIPE IT!", "cancel"];
+			_alertBox = new AlertBox("THIS WILL DELETE THE ENTIRE SECTION.\nAre you sure?", btnLabels);
+			super.base.addChild(_alertBox);
+			_alertBox.x = 512 -(_alertBox.width/2);
+			_alertBox.y = 384 - (_alertBox.height / 2);
+			
+			_lightbox_mc.visible = true;
+			
+			_alertBox.addEventListener(btnLabels[0], _c.deleteCurrentSection, false, 0, true);
+			_alertBox.addEventListener(btnLabels[1], closeAlertBox, false, 0, true);
 		}
 		
 		protected function closeAlertBox(event:Event = null):void 

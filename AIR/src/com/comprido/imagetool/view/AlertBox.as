@@ -46,11 +46,6 @@ package com.comprido.imagetool.view
 			var btnY:int = _message_txt.y + _message_txt.height + 10;
 			var h:int = btnY + 30;
 
-			square.graphics.lineStyle(1,0x000000);
-			square.graphics.beginFill(0xefefcc);
-			square.graphics.drawRect(0, 0, boxWidth, h);
-			square.graphics.endFill();
-			
 			addChild(square);
 			
 			square.addChild(_message_txt);
@@ -63,6 +58,11 @@ package com.comprido.imagetool.view
 				
 				btn.addEventListener(MouseEvent.CLICK, onBtnClick);
 			}
+			
+			square.graphics.lineStyle(1,0x000000);
+			square.graphics.beginFill(0xefefcc);
+			square.graphics.drawRect(0, 0, boxWidth, h);
+			square.graphics.endFill();			
 		}
 		
 		private function onBtnClick(event:MouseEvent):void 
@@ -89,6 +89,7 @@ package com.comprido.imagetool.view
 			tf.underline = false; 
 			tf.align = "center"; 
 			_message_txt.setTextFormat(tf);
+			_message_txt.autoSize = TextFieldAutoSize.CENTER;
 		}
 		
 		private function createButtons(btns:Vector.<String>):void
@@ -120,9 +121,23 @@ package com.comprido.imagetool.view
 			if (ii >= 0)
 			{
 				var w:int = _buttons[ii].x + _buttons[ii].width + 5;
-								
-				if (w > 150)
+
+				if (w > _message_txt.textWidth)
+				{
 					r = w;
+				}
+				else
+				{
+					r = _message_txt.textWidth + 18;
+					_message_txt.x = 7;
+					
+					var shift:int = (r - w) / 2;
+					
+					for each(var b:Button in _buttons)
+					{
+						b.x += shift;
+					}
+				}
 			}
 			
 			return r;

@@ -241,6 +241,12 @@ package com.comprido.imagetool.model
 			_relay.dispatchEvent(new CreateSectionEvent(_currentSection, 0, Relay.NEW_SECTION));
 		}
 		
+		public function deleteCurrentSection():void
+		{
+			_sectionList.splice(_currentSection, 1);
+			loadSection(-1);
+		}
+		
 		/**
 		 * creates a new page in the current section
 		 */
