@@ -183,8 +183,6 @@ package com.comprido.imagetool.controller
 		
 		public function onTileListMouseUp(event:MouseEvent):void
 		{
-			Debug.log("mouse up");
-			
 			if (event.target is ImageCell)
 			{
 				_selectedImageCell = ImageCell(event.target);
@@ -201,7 +199,6 @@ package com.comprido.imagetool.controller
 					}
 					else
 					{
-						Debug.log("TileSingleClickEvent");
 						_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));	
 					}
 				}
@@ -210,15 +207,32 @@ package com.comprido.imagetool.controller
 					_timer.stop();
 					_timer.removeEventListener(TimerEvent.TIMER_COMPLETE, clickTimerCompleteHandler);
 					_timer = null;
-					
+
 					onTileListDoubleClick(event);
 				}
 			}
 		}
 		
+		public function onTileListClickComplete(cellIndex:int):void
+		{
+			var id:Number = getThumbData(currentSectionThumbIDList[cellIndex]).id;
+			var isShortcut:Boolean = getThumbData(currentSectionThumbIDList[cellIndex]).isShortcut;
+			
+			if (isShortcut)
+			{
+				loadSectionID(id);
+			}
+			else
+			{
+				playSound(id);
+			}
+		}
+		
 		private function onTileListDoubleClick(event:MouseEvent = null):void
 		{
-			if (_m.currentSection >= 0 && event.target is ImageCell)
+			var tid:Number = getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id;
+			
+			if (_m.currentSection >= 0 && event.target is ImageCell && !_m.getThumbData(tid).isShortcut)
 			{
 				getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).onServer = false;
 				_m.hasSaved = false;
@@ -230,13 +244,11 @@ package com.comprido.imagetool.controller
 				}
 				else //edit the thumb
 				{
-					var tid:Number = getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id;
-					
 					startThumbEdit(tid);
-					
-					_relay.dispatchEvent(new TileDoubleClickEvent(_selectedImageCell, Relay.DOUBLE_CLICK_TILE));
 				}
-			}			
+			}
+			
+			_relay.dispatchEvent(new TileDoubleClickEvent(_selectedImageCell, Relay.DOUBLE_CLICK_TILE));
 		}
 		
 		public function onImageBrowserDoubleClick(event:MouseEvent):void
@@ -341,14 +353,7 @@ package com.comprido.imagetool.controller
 			}
 			else
 			{
-				if (getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).isShortcut)
-				{
-					loadSectionID(getThumbData(currentSectionThumbIDList[_selectedImageCell.listData.index]).id);
-				}
-				else
-				{				
-					_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));
-				}
+				_relay.dispatchEvent(new TileSingleClickEvent(_selectedImageCell, Relay.SINGLE_CLICK_TILE));
 			}
 		}
 		

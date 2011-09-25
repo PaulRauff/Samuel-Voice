@@ -38,6 +38,7 @@ SVMain.Controller = function(){
 		_v.evt.addListener(SVMain.View.THUMB_TOUCH_START, onThumbTouchStart);
 		_v.evt.addListener(SVMain.View.THUMB_TOUCH_MOVE, onThumbTouchMove);
 		_v.evt.addListener(SVMain.View.THUMB_TOUCH_END, onThumbTouchEnd);
+		_v.evt.addListener(SVMain.View.SECTION_LOAD, quickLoadSection);
 		_v.evt.addListener(SVMain.View.PAGE_UP, pageUp);
 
 		_m = new SVMain.Model();	
@@ -81,7 +82,7 @@ SVMain.Controller = function(){
 		var thumbHTML = "";
 		var ii = 0;
 		
-		for(ii = 0; ii < len; ii++){
+		for(ii = 1; ii < len; ii++){
 			thumbHTML += _v.getCellHTML(ii, sectionList[ii].id(), _m.getIndexThumbSize(), _m.getIndexFontSize(), sectionList[ii].name(), false);
 		}
 		
@@ -170,9 +171,7 @@ SVMain.Controller = function(){
 
 		var mvx = Math.abs(_startMoveX - _moveX);
 		var mvy = Math.abs(_startMoveY - _moveY);
-		
-		console.log(mvy);
-		
+
 		if(mvy < 30 && mvx < 30){
 			onThumbClicked(args);
 		}
@@ -201,7 +200,6 @@ SVMain.Controller = function(){
 
 	function onThumbIndexClicked(args){
 		var tid = args[1];
-		
 		loadSection(tid);
 	}
 	
@@ -232,6 +230,10 @@ SVMain.Controller = function(){
 		_v.setPageData(_m.getCurrentPage()+1, _m.getCurrentSectionPageTotal());
 	}
 	
+	function quickLoadSection(args){		
+		_m.quickLoadSection(args[1]);
+		setMenuState();
+	}
 
 	function loadSection(tid){
 		_v.destroy();

@@ -52,6 +52,9 @@ package com.comprido.imagetool.view
 		[Embed(source="..//..//..//..//..//bin//skin.swf",symbol="IndexViewLib")]
 		private var IndexViewSWF:Class;
 		
+		[Embed(source="..//..//..//..//..//bin//skin.swf",symbol="BMPStar")]
+		private var StarSWF:Class;
+		
 		public function IndexView(c:Controller) 
 		{
 			super.setC(c, -1, 0);
@@ -129,8 +132,11 @@ package com.comprido.imagetool.view
 			super.base.setChildIndex(_lightbox_mc, numChildren - 1);			
 			_lightbox_mc.visible = false;
 			
+			var favIcon:Bitmap = new StarSWF();
+			_tilelist.addItem( { label:"Short Cuts", source:favIcon } );
+			
 			var len:int = _c.totalSections;
-			for (var ii:int = 0; ii < len; ii++ )
+			for (var ii:int = 1; ii < len; ii++ )
 			{
 				try
 				{

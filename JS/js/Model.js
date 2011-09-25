@@ -158,10 +158,17 @@ SVMain.Model = function(){
 				break;
 			}
 		}
-		
+
 		_evt.fire(SVMain.Model.SECTION_READY);
 	}
 	
+	function quickLoadSection(sid){
+		//console.log(sid);
+		_currentSection = sid;
+		_evt.fire(SVMain.Model.SECTION_READY);
+		_m.menuDown = false;
+	}
+		
 	function loadPage(pid){
 		if(pid >= 0 && pid < _sectionData[_currentSection].pageTotal()){
 			_currentPage = pid;
@@ -258,6 +265,7 @@ SVMain.Model = function(){
 		getCurrentPage:getCurrentPage,
 		currentSection:_currentSection,
 		getSectionData:getSectionData,
+		quickLoadSection:quickLoadSection,
 		loadSection:loadSection,
 		loadPage:loadPage,
 		getAllThumbIDs:getAllThumbIDs,

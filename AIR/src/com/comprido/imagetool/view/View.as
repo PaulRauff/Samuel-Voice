@@ -65,9 +65,13 @@ package com.comprido.imagetool.view
 			
 			_currentSection = null;
 			
-			if(event.section >= 0)
+			if(event.section > 0)
 			{				
 				_currentSection = new SectionView(event.section, event.page, _c);
+			}
+			else if (event.section == 0)
+			{
+				_currentSection = new ShortcutsView(0, event.page, _c);
 			}
 			else
 			{

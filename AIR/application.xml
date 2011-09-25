@@ -21,4 +21,5 @@
   <icon>
     <image32x32>icons/ImageTool32.png</image32x32>
   </icon>
+  <supportedProfiles>extendedDesktop desktop</supportedProfiles>
 </application>

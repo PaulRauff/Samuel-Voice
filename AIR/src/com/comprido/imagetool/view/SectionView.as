@@ -55,14 +55,14 @@ package com.comprido.imagetool.view
 		private var _open_shortcut_btn:SimpleButton;
 		private var _image_load_btn:SimpleButton;		
 		private var _mp3_btn:SimpleButton;
-		private var _section_delete_btn:SimpleButton;
+		protected var _section_delete_btn:SimpleButton;
 		
-		private var _section_thumb_holder_uil:UILoader;
+		protected var _section_thumb_holder_uil:UILoader;
 
 		private var _bgColour:Sprite;
 		private var _imageHolder:Sprite;
 
-		private var _title_txt:TextField;
+		protected var _title_txt:TextField;
 		private var _description_txt:TextField;
 		
 		private var _lightbox_mc:MovieClip;
@@ -91,7 +91,7 @@ package com.comprido.imagetool.view
 			init();
 		}
 		
-		private function init():void
+		protected function init():void
 		{			
 			_c.initDragAndDrop();
 			
@@ -114,8 +114,9 @@ package com.comprido.imagetool.view
 			_open_shortcut_btn = SimpleButton(Validate.element(super.base["open_shortcut_btn"], "open_shortcut_btn missing"));
 			_image_load_btn = SimpleButton(Validate.element(super.base["image_load_btn"], "image_load_btn missing"));
 			_mp3_btn = SimpleButton(Validate.element(super.base["mp3_btn"], "mp3_btn missing"));
-			_section_delete_btn = SimpleButton(Validate.element(super.base["section_delete_btn"], "section_delete_btn missing"));
 			
+			_section_delete_btn = SimpleButton(Validate.element(super.base["section_delete_btn"], "section_delete_btn missing"));
+
 			_section_thumb_holder_uil = UILoader(Validate.element(super.base["section_thumb_holder_uil"], "section_thumb_holder_uil missing"));
 		
 			_lightbox_mc = MovieClip(Validate.element(super.base["lightbox_mc"], "lightbox_mc missing"));
@@ -130,10 +131,9 @@ package com.comprido.imagetool.view
 
 			//init states etc
 			/////////////////
+
+			setSectionImg();			
 			
-			
-			
-			_section_thumb_holder_uil.source = _c.getFileLocation(_c.getSectionID(_c.currentSection), "img");
 			_description_txt.text = Main.DESCRIPTION_DEFAULT_TEXT;
 
 			_lightbox_txt.text = "working...";
@@ -164,6 +164,11 @@ package com.comprido.imagetool.view
 			_library_close_btn.visible = false;
 			
 			resetTileList();
+		}
+		
+		protected function setSectionImg():void 
+		{
+			_section_thumb_holder_uil.source = _c.getFileLocation(_c.getSectionID(_c.currentSection), "img");
 		}
 
 		private function resetTileList(event:MouseEvent = null):void
@@ -238,11 +243,12 @@ package com.comprido.imagetool.view
 			_imageHolder.addEventListener(MouseEvent.CLICK, _c.openImageBrowser);
 			_image_load_btn.addEventListener(MouseEvent.CLICK, _c.openImageBrowser);
 			_mp3_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);
-			_record_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);
-			_section_delete_btn.addEventListener(MouseEvent.CLICK, _c.promptDeleteCurrentSection);
+			_record_btn.addEventListener(MouseEvent.CLICK, _c.openSoundRecorder);			
 			
 			_page_right_btn.addEventListener(MouseEvent.CLICK, _c.pageRight);
 			_page_left_btn.addEventListener(MouseEvent.CLICK, _c.pageLeft);
+			
+			_section_delete_btn.addEventListener(MouseEvent.CLICK, _c.promptDeleteCurrentSection);
 			
 			_size_cmp.addEventListener(Event.CHANGE, _c.thumbnailResize);
 			_font_cmp.addEventListener(Event.CHANGE, _c.fontResize);
@@ -528,10 +534,7 @@ package com.comprido.imagetool.view
 		}
 
 		private function onImageDropped(event:NewBitmapDataEvent):void
-		{
-			Debug.log("onImageDropped 1 >>> "+event.bm);
-			Debug.log("onImageDropped 2 >>> " + _image_load_btn.width);
-			
+		{			
 			var rat:Number = _c.getScaleRatio(event.bm, _image_load_btn.width);
 
 			event.bm.width = (event.bm.width * rat) - 2;
@@ -546,10 +549,7 @@ package com.comprido.imagetool.view
 			
 			TweenLite.to(_imageHolder, 0.3, {x:_imageHolderCoords.x, y:_imageHolderCoords.y});
 
-			if (event.bm.height < _image_load_btn.height)
-			{
-				event.bm.y = (_image_load_btn.height - event.bm.height)/2;
-			}
+			event.bm.y = 0;
 			
 			event.bm.x -= 5;
 		}
@@ -585,8 +585,6 @@ package com.comprido.imagetool.view
 
 		private function onTileListSingleClick(event:TileSingleClickEvent):void
 		{
-			Debug.log("onTileListSingleClick");
-			
 			var imgCell:ImageCell = event.imageCell;
 			imgCell.stopDrag();
 
@@ -608,12 +606,9 @@ package com.comprido.imagetool.view
 			}
 			else // normal click action
 			{
-				var id:Number = _c.getThumbData(_c.currentSectionThumbIDList[imgCell.listData.index]).id;
-				_c.playSound(id);
+				_tilelist.drawNow();
+				_c.onTileListClickComplete(imgCell.listData.index);
 			}
-			
-			_tilelist.drawNow();
-			
 		}
 
 		private function onTileListMiddleClick(event:TileMiddleClickEvent):void

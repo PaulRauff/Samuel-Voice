@@ -33,12 +33,13 @@ SVMain.View = function(){
 	SVMain.View.THUMB_TOUCH_END = "THUMB_TOUCH_END";
 	SVMain.View.MENU_CLICKED = "MENU_CLICKED";
 	SVMain.View.PAGE_UP = "PAGE_UP";
+	SVMain.View.SECTION_LOAD = "SECTION_LOAD";
 
 	_View();
 	function _View(){
 		//console.log("View ready");
 		
-		$("#menu_holder").html("");
+		$("#section_name").html("");
 	}
 	
 	function init(){
@@ -48,7 +49,17 @@ SVMain.View = function(){
 		_audio.preload = "auto";
 		
 		$("#menu_holder").click(function () {
+			_evt.fire(SVMain.View.MENU_CLICKED);			
+	    });
+	    
+		$("#menu_img_fav").click(function () {
+			$("#index_holder").slideUp('fast');
+			_evt.fire(SVMain.View.SECTION_LOAD, 0);
+	    });
+	    
+		$("#menu_img_home").click(function () {
 			_evt.fire(SVMain.View.MENU_CLICKED);
+			//$("#index_holder").slideDown('medium');
 	    });
 	    
 		document.getElementById("thumb_holder").ontouchstart = function(e){return evtHandler(e);};
@@ -125,7 +136,7 @@ SVMain.View = function(){
 	
 	function setPageData(currentPage, totalPages){
 		if(totalPages > 1){
-			var pd = "<a href='#'>page "+currentPage+" of "+totalPages+"</a>";
+			var pd = "<a href='#' id='page_link'>page "+currentPage+" of "+totalPages+"</a>";
 			$("#page_data").html(pd);
 			$("#page_data").click(function(e){_evt.fire(SVMain.View.PAGE_UP); return false;});
 		}
@@ -152,7 +163,7 @@ SVMain.View = function(){
 	
 	function setCurrentSectionName(name){
 		
-		$("#menu_holder").html(name);
+		$("#section_name").html(name);
 	}
 	
 	function addThumbs(html){
