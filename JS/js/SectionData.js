@@ -22,13 +22,19 @@ SVMain.SectionData = function(id){
 	var _thumbsize =150;
 	var _fontsize = 12 
 	var _bgcolour = '6750207';
-	var _page = [new Array(), new Array()];
+	var _page = new Array();
 	var _totalPages = 0;
 
 	function addThumbIDToPage(pid, thumbID, thumbIndex){
 		if(pid > _totalPages)
 			_totalPages = pid;
 
+		if(!_page[pid]){
+			_page[pid] = new Array();
+		}
+		
+		console.log(pid +"::"+_page[pid]);
+		
 		_page[pid][thumbIndex] = thumbID;
 	}
 	

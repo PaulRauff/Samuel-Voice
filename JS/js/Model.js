@@ -1,141 +1,137 @@
+/*global $,console,SVMain,sp*/
+
 /**
-	 * ...
-	 * @author Paul Rauff
-	 * @copy Copyright (c) 2011, Paul Rauff
-	 *
-	 *--------------------------------------------------------------------------
-	 * All rights reserved.
+ * ...
+ * @author Paul Rauff
+ * @copy Copyright (c) 2011, Paul Rauff
+ *
+ *--------------------------------------------------------------------------
+ * All rights reserved.
 
- 	 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-	 * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-	 * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
 
-	 * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-	 *--------------------------------------------------------------------------
-	 * http://en.wikipedia.org/wiki/BSD_licenses
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *--------------------------------------------------------------------------
+ * http://en.wikipedia.org/wiki/BSD_licenses
  */
 
-SVMain.Model = function(){
+SVMain.Model = function() {
 	var _xmlData;
 	var _evt;
 	var _currentPage = 0;
 	var _currentSection = 0;
 	var _indexFontSize = 14;
 	var _indexThumbSize = 150;
-	var _thumbData = new Array();
-	var _sectionData = new Array();
-	var _thumbIDs = new Array();
+	var _thumbData = [];
+	var _sectionData = [];
+	var _thumbIDs = [];
 	var _menuDown = true;
 	var _touchTime = 300;
-	
+
 	SVMain.Model.XML_READY = "XML_READY";
 	SVMain.Model.SECTION_READY = "SECTION_READY";
 	SVMain.Model.ERROR_DEFAULT = "ERROR_DEFAULT";
-		
-	_Model();
-	function _Model(){
-		//console.log("Model ready");	
-	}
-	
-	function loadXML()
-	{		
-		$.ajax({
-			type: "GET",
-			url: SVMain.XML_URL,
-			cache:false,
-			dataType:"xml",
-			success: dataReceived,
-			error: throwError
 
-		});
-			
-		_evt = this.evt;
+	/**
+	 * pseudo constructor, called at end of class
+	 */
+	function _Model() {
+		//console.log("Model ready");
 	}
-	
-	function dataReceived(data){
+
+	function throwError() {
+		_evt.fire(SVMain.Model.ERROR_DEFAULT);
+	}
+
+	function dataReceived(data) {
 		//console.log("dataReceived");
 		_xmlData = data;
-		
+
 		var thumbs = _xmlData.getElementsByTagName("thumb");
 		var sections = _xmlData.getElementsByTagName("section");
-		
+
 		var indexNode = _xmlData.getElementsByTagName("index");
 		_indexFontSize = indexNode[0].attributes.getNamedItem("fontsize").value;
 		_indexThumbSize = indexNode[0].attributes.getNamedItem("thumbsize").value;
-		
+
 		var pages = null;
 		var pageLen = 0;
 		var pageThumbs = null;
 		var pageThumbLen = 0;
-		
+
 		var len = thumbs.length;
 		var ii = 0;
 		var jj = 0;
 		var kk = 0;
 		var tid = 0;
-		
-		for(ii = 0; ii < len; ii++){
 
-			if(thumbs[ii].attributes.getNamedItem("id").value){
+		for( ii = 0; ii < len; ii++) {
+
+			if(thumbs[ii].attributes.getNamedItem("id").value) {
 				tid = thumbs[ii].attributes.getNamedItem("id").value;
 				_thumbData[tid] = new SVMain.ThumbData(tid);
 				_thumbIDs.push(tid);
 			}
-			else{
+			else {
 				tid = 0;
 				continue;
 			}
-			
-			if(thumbs[ii].attributes.getNamedItem("com").value)
-				_thumbData[tid].isCommon(thumbs[ii].attributes.getNamedItem("com").value);
-			
-			if(thumbs[ii].attributes.getNamedItem("scut").value)
-				_thumbData[tid].isShortcut(thumbs[ii].attributes.getNamedItem("scut").value);
 
-			if(thumbs[ii].childNodes.length > 0){
+			if(thumbs[ii].attributes.getNamedItem("com").value) {
+				_thumbData[tid].isCommon(thumbs[ii].attributes.getNamedItem("com").value);
+			}
+
+			if(thumbs[ii].attributes.getNamedItem("scut").value) {
+				_thumbData[tid].isShortcut(thumbs[ii].attributes.getNamedItem("scut").value);
+			}
+
+			if(thumbs[ii].childNodes.length > 0) {
 				_thumbData[tid].description(thumbs[ii].childNodes[0].nodeValue);
 			}
 		}
-		
 		len = sections.length;
-		
-		for(ii = 0; ii < len; ii++){
-			
-			if(sections[ii].attributes.getNamedItem("id").value){
+
+		for( ii = 0; ii < len; ii++) {
+
+			if(sections[ii].attributes.getNamedItem("id").value) {
 				_sectionData[ii] = new SVMain.SectionData(sections[ii].attributes.getNamedItem("id").value);
 			}
-			else{			
+			else {
 				continue;
 			}
-			
-			if(sections[ii].attributes.getNamedItem("name").value)
+
+			if(sections[ii].attributes.getNamedItem("name").value) {
 				_sectionData[ii].name(sections[ii].attributes.getNamedItem("name").value);
-				
-			if(sections[ii].attributes.getNamedItem("thumbsize").value)
+			}
+
+			if(sections[ii].attributes.getNamedItem("thumbsize").value) {
 				_sectionData[ii].thumbsize(sections[ii].attributes.getNamedItem("thumbsize").value);
-				
-			if(sections[ii].attributes.getNamedItem("fontsize").value)
+			}
+
+			if(sections[ii].attributes.getNamedItem("fontsize").value) {
 				_sectionData[ii].fontsize(sections[ii].attributes.getNamedItem("fontsize").value);
-				
-			if(sections[ii].attributes.getNamedItem("bgcolour").value)
+			}
+
+			if(sections[ii].attributes.getNamedItem("bgcolour").value) {
 				_sectionData[ii].bgcolour(sections[ii].attributes.getNamedItem("bgcolour").value);
-				
+			}
 			pages = sections[ii].getElementsByTagName("page");
 			pageLen = pages.length;
-			
-			for(jj = 0; jj < pageLen; jj++){
+
+			for( jj = 0; jj < pageLen; jj++) {
 				//addThumbIDToPage(pid, thumbID, thumbIndex)
-				
+
 				pageThumbs = pages[jj].getElementsByTagName("t");
 				pageThumbLen = pageThumbs.length;
 
-				for(kk = 0; kk < pageThumbLen; kk++){
+				for( kk = 0; kk < pageThumbLen; kk++) {
 					_sectionData[ii].addThumbIDToPage(jj, pageThumbs[kk].attributes.getNamedItem("id").value, kk);
 				}
 			}
 		}
-
 		thumbs = null;
 		sections = null;
 		len = 0;
@@ -147,13 +143,13 @@ SVMain.Model = function(){
 
 		_evt.fire(SVMain.Model.XML_READY);
 	}
-	
-	function loadSection(sid){
+
+	function loadSection(sid) {
 		var len = _sectionData.length;
 		var ii = 0;
-		
-		for(ii = 0; ii < len; ii++){			
-			if(_sectionData[ii].id() == sid){
+
+		for( ii = 0; ii < len; ii++) {
+			if(_sectionData[ii].id() === sid) {
 				_currentSection = ii;
 				break;
 			}
@@ -161,126 +157,133 @@ SVMain.Model = function(){
 
 		_evt.fire(SVMain.Model.SECTION_READY);
 	}
-	
-	function quickLoadSection(sid){
+
+	function quickLoadSection(sid) {
 		//console.log(sid);
 		_currentSection = sid;
+		_menuDown = false;
 		_evt.fire(SVMain.Model.SECTION_READY);
-		_m.menuDown = false;
 	}
-		
-	function loadPage(pid){
-		if(pid >= 0 && pid < _sectionData[_currentSection].pageTotal()){
+
+	function loadPage(pid) {
+		if(pid >= 0 && pid < _sectionData[_currentSection].pageTotal()) {
 			_currentPage = pid;
 			_evt.fire(SVMain.Model.SECTION_READY);
 		}
 	}
-	
+
 	function getAllThumbIDs() {
-	  return _thumbIDs;
+		return _thumbIDs;
 	}
-	
-	function getCurrentThumbIDs(){
-		return _sectionData[_currentSection].getThumbList(_currentPage);		
+
+	function getCurrentThumbIDs() {
+		return _sectionData[_currentSection].getThumbList(_currentPage);
 	}
-	
-	function getSectionData(){
+
+	function getSectionData() {
 		return _sectionData;
 	}
-	
-	function currentSectionData(){
-		
-		if(!_sectionData[_currentSection]){
+
+	function currentSectionData() {
+
+		if(!_sectionData[_currentSection]) {
 			throwError();
 		}
-		
+
 		return _sectionData[_currentSection];
 	}
-	
-	function getThumbDescription(tid){
-		return _thumbData[tid].description();		
+
+	function getThumbDescription(tid) {
+		return _thumbData[tid].description();
 	}
-	
-	function getIndexThumbSize(){
+
+	function getIndexThumbSize() {
 		return _indexThumbSize;
 	}
-	
-	function getIndexFontSize(){
+
+	function getIndexFontSize() {
 		return _indexFontSize;
 	}
-		
-	function getCurrentFontSize(){
+
+	function getCurrentFontSize() {
 		return currentSectionData().fontsize();
 	}
-	
-	function getCurrentThumbSize(){
+
+	function getCurrentThumbSize() {
 		return currentSectionData().thumbsize();
 	}
-	
-	function getCurrentBGColour(){
+
+	function getCurrentBGColour() {
 		return currentSectionData().bgcolour();
 	}
-	
-	function getCurrentSectionName(){
+
+	function getCurrentSectionName() {
 		return currentSectionData().name();
 	}
-	
-	function getCurrentPage(){
+
+	function getCurrentPage() {
 		return _currentPage;
 	}
-	
-	function getCurrentSectionPageTotal(){
+
+	function getCurrentSectionPageTotal() {
 		return currentSectionData().pageTotal();
 	}
 
-	var getThumbShortcut = function(tid){
-		if(!tid){
+	var getThumbShortcut = function(tid) {
+		if(!tid) {
 			return false;
 		}
-		
+
 		return _thumbData[tid].isShortcut();
-	}
-	
-	var getTouchTime = function(){
+	};
+	var getTouchTime = function() {
 		return _touchTime;
-	}
-	
-	var menuDown = function(){
-		if(arguments[0])
-		{
+	};
+	var menuDown = function() {
+		if(arguments[0]) {
 			_menuDown = arguments[0];
 		}
-		
+
 		return _menuDown;
+	};
+	function loadXML() {
+		$.ajax({
+			type : "GET",
+			url : SVMain.XML_URL,
+			cache : false,
+			dataType : "xml",
+			success : dataReceived,
+			error : throwError
+
+		});
+		_evt = this.evt;
 	}
-	
-	function throwError(){
-		_evt.fire(SVMain.Model.ERROR_DEFAULT);
-	}
-	
-	return{
-		loadXML:loadXML,
-		thumbData:_thumbData,
-		sectionData:_sectionData,
-		getCurrentPage:getCurrentPage,
-		currentSection:_currentSection,
-		getSectionData:getSectionData,
-		quickLoadSection:quickLoadSection,
-		loadSection:loadSection,
-		loadPage:loadPage,
-		getAllThumbIDs:getAllThumbIDs,
-		getCurrentThumbIDs:getCurrentThumbIDs,
-		getThumbDescription:getThumbDescription,
-		getCurrentThumbSize:getCurrentThumbSize,
-		getCurrentFontSize:getCurrentFontSize,
-		getCurrentBGColour:getCurrentBGColour,
-		getCurrentSectionName:getCurrentSectionName,
-		getCurrentSectionPageTotal:getCurrentSectionPageTotal,
-		getThumbShortcut:getThumbShortcut,
-		getIndexThumbSize:getIndexThumbSize,
-		getIndexFontSize:getIndexFontSize,
-		getTouchTime:getTouchTime,
-		menuDown:menuDown,
-		evt:SVMain.Event()
-	}
-}
+
+	_Model();
+
+	return {
+		loadXML : loadXML,
+		thumbData : _thumbData,
+		sectionData : _sectionData,
+		getCurrentPage : getCurrentPage,
+		currentSection : _currentSection,
+		getSectionData : getSectionData,
+		quickLoadSection : quickLoadSection,
+		loadSection : loadSection,
+		loadPage : loadPage,
+		getAllThumbIDs : getAllThumbIDs,
+		getCurrentThumbIDs : getCurrentThumbIDs,
+		getThumbDescription : getThumbDescription,
+		getCurrentThumbSize : getCurrentThumbSize,
+		getCurrentFontSize : getCurrentFontSize,
+		getCurrentBGColour : getCurrentBGColour,
+		getCurrentSectionName : getCurrentSectionName,
+		getCurrentSectionPageTotal : getCurrentSectionPageTotal,
+		getThumbShortcut : getThumbShortcut,
+		getIndexThumbSize : getIndexThumbSize,
+		getIndexFontSize : getIndexFontSize,
+		getTouchTime : getTouchTime,
+		menuDown : menuDown,
+		evt : SVMain.Event()
+	};
+};
